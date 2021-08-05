@@ -1,6 +1,6 @@
 import { Component } from "react";
 import PropTypes from 'prop-types';
-import {LayerRow} from './Layer';
+import Layer, { LayerInfo } from './Layer';
 
 const PasswordForm = () => (
     <form name="password">
@@ -16,53 +16,47 @@ class LayerList extends Component {
         const {list} = this.props;
         this.state = {
             list,
+            setUp: null
         }
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
+        this.setUpLayer = this.setUpLayer.bind(this);
     }
 
     handlerRemoveLayer(id) {
-        const list = this.state.list.filter(({layerId}) => layerId !== id)
+        const list = this.state.list.filter(({layerId}) => layerId !== id);
         this.setState({list});
     }
 
-    handlerReplaceLayer(current, direction) {
-        const layerList = this.state.list;
-        const currentObj = layerList.filter(({layerId}) => layerId === current)[0],
-            list = [...layerList];
+    handlerReplaceLayer(currentId, direction) {
+        const next = direction === 'up' ? -1 : 0;
+        const list = [...this.state.list];
 
-        let prevObj, nextObj, prevIndex;
-        if (direction === 'up') {
-            nextObj = {...currentObj};
-            prevIndex = layerList.indexOf(currentObj) - 1;
-            prevObj = layerList[prevIndex];
-        } else {
-            prevObj = {...currentObj};
-            prevIndex = layerList.indexOf(currentObj);
-            nextObj = layerList[prevIndex + 1];
-        }
-                
-        list.splice(prevIndex, 2, nextObj, prevObj);
-        // console.log(prevIndex, nextObj);
-        this.setState({list});
+        const currentLayer = list.filter(({layerId}) => layerId === currentId)[0];
+        const startIndex = list.indexOf(currentLayer) + next;
+
+        const prevLayer = list[startIndex],
+            nextLayer = list[startIndex + 1];
+        
+        list.splice(startIndex, 2, nextLayer, prevLayer);
+        this.setState({ list });
+    }
+
+    setUpLayer(layerId = null) {
+        this.setState({setUp: layerId})
     }
 
     render() {
         const { name } = this.props;
-        const list = this.state.list;
+        const { list, setUp } = this.state;
 
         return (
             <div className="line">
                 <div className="typename" name={name}>
-                    {name === "available"
-                        ? "Вибрані "
-                        : name === "selectable"
-                        ? "Доступні "
-                        : "Редаговані "}
-                    шари:
+                Доступні шари:
                 </div>
                 <div className="wms">
-                    <div className="wms-list" name={name + "List"}>
+                    <div className="wms-list">
                         <table className="layer-list">
                             <thead>
                                 <tr>
@@ -73,15 +67,13 @@ class LayerList extends Component {
                             </thead>
                             <tbody>
                                 {list.length ?
-                                    list.map(({ layerId, layerName, workspace, title }) => 
-                                        <LayerRow 
-                                            key={layerId}
-                                            id={layerId}
-                                            name={layerName} 
-                                            workspace={workspace}
-                                            title={title}
+                                    list.map(layer => 
+                                        <Layer
+                                            key={layer.layerId}
+                                            layer={layer}
                                             removeLayer={this.handlerRemoveLayer}
                                             replaceLayer={this.handlerReplaceLayer}
+                                            setUp={this.setUpLayer}
                                         />
                                     )
 
@@ -93,6 +85,7 @@ class LayerList extends Component {
                         </table>
                     </div>
                 </div>
+                {list.filter(({layerId}) => layerId === setUp).map(layer => <LayerInfo key={layer.layerId} layer={layer} />)}
             </div>
         );
     }
@@ -103,10 +96,10 @@ LayerList.propTypes = {
 }
 
 
-const LayersInfo = ({wms_layers}) => (
+const LayersInfo = ({wmsLayers}) => (
     <div className="wrap-info">
         <PasswordForm />
-        {Object.keys(wms_layers).map(layerType => <LayerList key={layerType} name={layerType} list={wms_layers[layerType]} />)}
+        <LayerList list={wmsLayers} />
     </div>
 )
 LayersInfo.propTypes = {
