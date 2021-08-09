@@ -30,7 +30,7 @@ LayerRow.propTypes = {
 
 
 const LayerInfo = () => (
-    <div id="add-layer-background"></div>
+    <div id="add-layers-background"></div>
 );
 
 
@@ -55,5 +55,5 @@ class Layer extends Component {
     }
 }
 
-export {LayerInfo};
+export { LayerInfo };
 export default Layer;

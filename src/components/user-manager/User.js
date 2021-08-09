@@ -26,46 +26,47 @@ UserInfo.propTypes = {
 class User extends Component {
     constructor(props) {
         super(props);
+        
+        const { filters, print, available_wms, selectable_wms, editable_wms, parameters } =
+            this.props.user;
+        const wmsList = [
+            ...JSON.parse(available_wms),
+            ...JSON.parse(selectable_wms),
+            ...JSON.parse(editable_wms),
+        ];
 
-        const {wmsList, filters, print} = this.props;
-
-        const parameters = this.props.parameters.split(']').reduce( (obj, line) => {
-            const [id, paramArr = ''] = line.split('[');
-            obj[id] = paramArr.split(',');
+        const params = parameters.split("]").reduce((obj, line) => {
+            const [id, paramArr = ""] = line.split("[");
+            obj[id] = paramArr.split(",");
             return id ? obj : {};
         }, {});
 
         this.state = {
             wmsList,
-            layersHash: [],
-            parameters,
+            parameters: params,
             filters: JSON.parse(filters.replaceAll("&quot;", '\\"')),
             print,
         };
     }
     render() {
-        const {login, name, email} = this.props;
+        const {login, name, email} = this.props.user;
 
-        return <div className="list">
-            <UserInfo 
-                login={login}
-                name={name}
-                email={email}
-            >
-                <LayersInfo wmsLayers={this.state.wmsList}/>
-            </UserInfo>
-            <Buttons />
-        </div>
+        return (
+            <div className="list">
+                <UserInfo login={login} name={name} email={email}>
+                    <LayersInfo
+                        wmsLayers={this.state.wmsList}
+                        modalWindow={this.props.modalWindow}
+                    />
+                </UserInfo>
+                <Buttons />
+            </div>
+        );
     }
 }
 User.propTypes = {
-    login: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    wmsLayer: PropTypes.string,
-    parameters: PropTypes.string.isRequired,
-    filters: PropTypes.string.isRequired,
-    print: PropTypes.string.isRequired,
+    user: PropTypes.object.isRequired,
+    modalWindow: PropTypes.func
 };
 
 export default User;

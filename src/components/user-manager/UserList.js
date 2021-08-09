@@ -1,6 +1,5 @@
 import { Component } from "react";
-// import { query } from "../../backend/db";
-import DATA from "../../data/users";
+// import DATA from "../../data/users";
 import User from "./User";
 
 class UserList extends Component {
@@ -12,36 +11,25 @@ class UserList extends Component {
     }
 
     componentDidMount() {
-        const users = [...DATA];
-        // client.connect();
-        // client.query(query.getUsers, (err, res) => {
-        //     console.log(err ? err.stack : res.rows);
-        //     client.end();
-        // })
-        // console.log(query.getUsers);
-        this.setState({users});
+        fetch("http://localhost:3001/")
+            .then((response) => {
+                return response.json();
+            })
+            .then((users) => {
+                this.setState(() => ({ users }));
+            });
     }
 
     render() {
         const userList = this.state.users;
         return <div id="wrapper">
-            {userList.map(({ id, login, name, email, status, available_wms, selectable_wms, editable_wms, parameters, filters, print }) => {
+            {userList.map(item => {
                 console.log();
                 return (
                     <User
-                        key={id}
-                        email={email}
-                        login={login}
-                        name={name}
-                        wmsList={[
-                            ...JSON.parse(available_wms),
-                            ...JSON.parse(selectable_wms),
-                            ...JSON.parse(editable_wms),
-                        ]}
-                        filters={filters}
-                        parameters={parameters}
-                        print={print}
-                        status={status}
+                        key={item.id}
+                        user={item}
+                        modalWindow={this.props.modalWindow}
                     />
                 );
             })}

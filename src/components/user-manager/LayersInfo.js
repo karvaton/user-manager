@@ -1,6 +1,6 @@
 import { Component } from "react";
 import PropTypes from 'prop-types';
-import Layer, { LayerInfo } from './Layer';
+import Layer from './Layer';
 
 const PasswordForm = () => (
     <form name="password">
@@ -16,11 +16,11 @@ class LayerList extends Component {
         const {list} = this.props;
         this.state = {
             list,
-            setUp: null
         }
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
+        // this.openAddLayersWindow = this.openAddLayersWindow.bind(this);
     }
 
     handlerRemoveLayer(id) {
@@ -42,13 +42,14 @@ class LayerList extends Component {
         this.setState({ list });
     }
 
-    setUpLayer(layerId = null) {
-        this.setState({setUp: layerId})
+    setUpLayer(id) {
+        const [layer] = this.state.list.filter(({layerId}) => layerId === id);
+        this.props.modalWindow(layer);
     }
 
     render() {
         const { name } = this.props;
-        const { list, setUp } = this.state;
+        const { list } = this.state;
 
         return (
             <div className="line">
@@ -84,8 +85,16 @@ class LayerList extends Component {
                             </tbody>
                         </table>
                     </div>
+                    <div>
+                        <input 
+                            className="addLayer" 
+                            name="availableList" 
+                            type="button" 
+                            value="Додати шар" 
+                            onClick={ () => this.props.modalWindow('addLayer') } 
+                        />
+                    </div>
                 </div>
-                {list.filter(({layerId}) => layerId === setUp).map(layer => <LayerInfo key={layer.layerId} layer={layer} />)}
             </div>
         );
     }
@@ -96,14 +105,14 @@ LayerList.propTypes = {
 }
 
 
-const LayersInfo = ({wmsLayers}) => (
+const LayersInfo = ({wmsLayers, modalWindow}) => (
     <div className="wrap-info">
         <PasswordForm />
-        <LayerList list={wmsLayers} />
+        <LayerList list={wmsLayers} modalWindow={modalWindow} />
     </div>
 )
 LayersInfo.propTypes = {
-    wms_layers: PropTypes.object,
+    wmsLayers: PropTypes.arrayOf(PropTypes.object),
 }
 
 export default LayersInfo;
