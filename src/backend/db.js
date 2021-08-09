@@ -1,10 +1,21 @@
-const pg = require("pg");
+const Pool = require("pg").Pool;
 const accessConfig = require("./access_config");
 
-const client = new pg.Pool(accessConfig);
-const query = {
-    getUsers: "SELECT * FROM admin.users",
-};
-Object.freeze(query);
+const pool = new Pool(accessConfig);
 
-module.export = { query, client };
+const getUsers = () => {
+    return new Promise(function (resolve, reject) {
+        pool.query("SELECT * FROM admin.users WHERE id > 0", (error, results) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(results.rows);
+        });
+    });
+};
+
+
+
+module.exports = {
+    getUsers
+};

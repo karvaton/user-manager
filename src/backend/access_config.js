@@ -6,4 +6,4 @@ const accessConfig = {
     password: 'admin'
 }
 
-module.export = accessConfig;
+module.exports = accessConfig;
