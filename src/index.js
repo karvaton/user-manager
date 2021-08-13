@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 import App from './App';
-import UserManager from './components/user-manager/user-page'
-import { history, /* navigate */ } from './history/history';
+import UserManager from './components/user-manager/user-page';
+import Login from './components/admin-auth/Login';
+import { history, navigate } from './history/history';
 import Router from './components/router/router';
 import Route from "./components/router/route";
 
@@ -14,24 +15,33 @@ import reportWebVitals from './reportWebVitals';
 export const renderApp = (state, callback = () => {}) => {
     ReactDOM.render(
         <Router {...state}>
-            <Route path="" component={App} >
+            <Route path="" component={App}>
+                <Route path="/admin-auth" component={Login} />
                 <Route path="/register-user" component={UserManager} />
                 <Route path="/user-manager" component={UserManager} />
                 <Route path="/edits-manager" component={UserManager} />
             </Route>
         </Router>,
-        document.getElementById('root'),
+        document.getElementById("root"),
         callback
-    )
+    );
 }
 
 let state = {
     location: window.location.pathname,
+    auth: false
 }
 
-history.listen( location => {
+if (state.location === '/') {
+    // state.auth ? 
+        state.location = "/user-manager"
+        // : state.location = "/admin-auth";
+    navigate(state.location);
+}
+
+history.listen( ({location}) => {
     state = Object.assign({}, state, {
-        location: location.pathname
+        location: state.auth ? location.pathname : '/admin-auth'
     });
     renderApp(state);
 });

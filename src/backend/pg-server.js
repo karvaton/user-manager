@@ -20,8 +20,19 @@ app.use(function (req, res, next) {
 });
 
 
-app.get("/", (req, res) => {
+app.get("/users", (req, res) => {
     db.getUsers()
+        .then((response) => {
+            res.status(200).send(response);
+        })
+        .catch((error) => {
+            res.status(500).send(error);
+        });
+});
+
+app.post('/auth', (req, res) => {
+    let {login, password} =  req.body;
+    db.auth(login, password)
         .then((response) => {
             res.status(200).send(response);
         })

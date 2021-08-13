@@ -1,0 +1,59 @@
+div#auth-div {
+    display: block;
+}
+
+.wrapper {
+    background-color: whitesmoke;
+    list-style-type: none;
+    padding: 0;
+    border-radius: 3px;
+    width: 40%;
+    margin: auto;
+    padding: .2em;
+    margin-top: 1em;
+    border-radius: 5px;
+    box-shadow: 0 0 6px 2px #8888;
+    /* display: none; */
+}
+
+.form-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: .5em;
+}
+
+.form-row > label {
+    padding: .3em 1em .3em 0;
+    flex: 1;
+}
+
+.form-row > input {
+    flex: 2;
+    padding: .3em;
+}
+
+.form-row > button {
+    padding: .5em 1.5em;
+    background: #455b98;
+    color: white;
+    border: 0;
+}
+
+
+@media screen and (min-width: 768px) {
+    .form-row > input {
+        flex: 5;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .form-row > input {
+        flex: 5;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .form-row > input {
+        flex: 5;
+    }
+}
