@@ -36,14 +36,14 @@ const LayerInfo = () => (
 
 class Layer extends Component {
     render() {
-        const { layerId, workspace, layerName, title, access } = this.props.layer;
+        const { lid, workspace, layer_name, title, access } = this.props.layer;
         const { removeLayer, replaceLayer, setUp } = this.props;
 
         return (
             <LayerRow
                 key="layer-row"
-                id={layerId}
-                name={layerName}
+                id={lid}
+                name={layer_name}
                 workspace={workspace}
                 title={title}
                 access={access}

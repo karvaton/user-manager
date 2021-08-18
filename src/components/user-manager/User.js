@@ -1,6 +1,6 @@
 import { Component } from "react";
 import PropTypes from 'prop-types';
-import LayerList from "./LayersInfo";
+import LayerList from "./LayerList";
 
 const Buttons = () => (
     <div className="buttons">

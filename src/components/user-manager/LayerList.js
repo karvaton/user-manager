@@ -19,12 +19,10 @@ class LayerList extends Component {
         const { login } = this.props;
         fetch(`http://localhost:5000/users/${login}/layers`)
             .then((res) => {
-                console.log(res);
                 return res.json();
             })
             .then((list) => {
-                console.log(list);
-                // this.setState(() => ({ list }));
+                this.setState(() => ({ list }));
             })
             .catch(err => console.log(err));
     }
@@ -38,7 +36,7 @@ class LayerList extends Component {
         const next = direction === 'up' ? -1 : 0;
         const list = [...this.state.list];
 
-        const currentLayer = list.filter(({layerId}) => layerId === currentId)[0];
+        const currentLayer = list.filter(({lid}) => lid === currentId)[0];
         const startIndex = list.indexOf(currentLayer) + next;
 
         const prevLayer = list[startIndex],
@@ -49,7 +47,7 @@ class LayerList extends Component {
     }
 
     setUpLayer(id) {
-        const [layer] = this.state.list.filter(({layerId}) => layerId === id);
+        const [layer] = this.state.list.filter(({lid}) => lid === id);
         this.props.modalWindow(layer);
     }
 
@@ -76,7 +74,7 @@ class LayerList extends Component {
                                 {list.length ?
                                     list.map(layer => 
                                         <Layer
-                                            key={layer.layerId}
+                                            key={layer.lid}
                                             layer={layer}
                                             removeLayer={this.handlerRemoveLayer}
                                             replaceLayer={this.handlerReplaceLayer}
@@ -110,15 +108,5 @@ LayerList.propTypes = {
     list: PropTypes.arrayOf(PropTypes.object),
 }
 
-
-// const LayersInfo = ({wmsLayers, modalWindow}) => (
-//     <div className="wrap-info">
-//         <PasswordForm />
-//         <LayerList list={wmsLayers} modalWindow={modalWindow} />
-//     </div>
-// )
-// LayersInfo.propTypes = {
-//     wmsLayers: PropTypes.arrayOf(PropTypes.object),
-// }
 
 export default LayerList;
