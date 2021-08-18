@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import './admin-auth.css';
-import * as auth from '../../backend/auth';
-import { navigate } from '../../history/history';
+// import * as auth from '../../backend/authRouter';
+// import { history } from '../../history/history';
 
 class Login extends Component {
     constructor(props) {
@@ -11,16 +11,21 @@ class Login extends Component {
             password: '',
         }
         this.login = this.login.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     login(e) {
-        e.preventDefault();
-        const {login, password} = this.state;
+    //     e.preventDefault();
+    //     const {login, password} = this.state;
 
-        auth.login(login, password)
-            .then(() => {
-                navigate('/user-manager');
-            });
+        // auth.login(login, password)
+        //     // .then((res) => console.log(res.length))
+        //     .then( res => {
+        //         res
+        //           ? history.push("/user-manager")
+        //           : alert("Неправильний логін або пароль")
+        //     }
+        // )
     }
 
     handleChange(e) {

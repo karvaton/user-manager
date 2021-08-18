@@ -11,7 +11,7 @@ class UserList extends Component {
     }
 
     componentDidMount() {
-        fetch("http://localhost:3001/users")
+        fetch("http://localhost:5000/users")
             .then((response) => {
                 return response.json();
             })

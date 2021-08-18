@@ -2,25 +2,31 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 
-const PasswordForm = () => (
-    <form name="password">
-        Пароль:
-        <input type="password" name="password"/>
-        <input type="submit" className="change-password" value="Змінити"/>
-    </form>
-)
-
 class LayerList extends Component {
     constructor(props) {
         super(props);
-        const {list} = this.props;
+
         this.state = {
-            list,
+            list: [],
         }
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
         // this.openAddLayersWindow = this.openAddLayersWindow.bind(this);
+    }
+
+    componentDidMount() {
+        const { login } = this.props;
+        fetch(`http://localhost:5000/users/${login}/layers`)
+            .then((res) => {
+                console.log(res);
+                return res.json();
+            })
+            .then((list) => {
+                console.log(list);
+                // this.setState(() => ({ list }));
+            })
+            .catch(err => console.log(err));
     }
 
     handlerRemoveLayer(id) {
@@ -105,14 +111,14 @@ LayerList.propTypes = {
 }
 
 
-const LayersInfo = ({wmsLayers, modalWindow}) => (
-    <div className="wrap-info">
-        <PasswordForm />
-        <LayerList list={wmsLayers} modalWindow={modalWindow} />
-    </div>
-)
-LayersInfo.propTypes = {
-    wmsLayers: PropTypes.arrayOf(PropTypes.object),
-}
+// const LayersInfo = ({wmsLayers, modalWindow}) => (
+//     <div className="wrap-info">
+//         <PasswordForm />
+//         <LayerList list={wmsLayers} modalWindow={modalWindow} />
+//     </div>
+// )
+// LayersInfo.propTypes = {
+//     wmsLayers: PropTypes.arrayOf(PropTypes.object),
+// }
 
-export default LayersInfo;
+export default LayerList;

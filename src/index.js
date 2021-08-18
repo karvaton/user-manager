@@ -4,6 +4,7 @@ import './index.css';
 
 import App from './App';
 import UserManager from './components/user-manager/user-page';
+import Edits from './components/edits-manager/Edits';
 import Login from './components/admin-auth/Login';
 import { history, navigate } from './history/history';
 import Router from './components/router/router';
@@ -19,7 +20,7 @@ export const renderApp = (state, callback = () => {}) => {
                 <Route path="/admin-auth" component={Login} />
                 <Route path="/register-user" component={UserManager} />
                 <Route path="/user-manager" component={UserManager} />
-                <Route path="/edits-manager" component={UserManager} />
+                <Route path="/edits-manager" component={Edits} />
             </Route>
         </Router>,
         document.getElementById("root"),
@@ -29,7 +30,7 @@ export const renderApp = (state, callback = () => {}) => {
 
 let state = {
     location: window.location.pathname,
-    auth: false
+    auth: true
 }
 
 if (state.location === '/') {
@@ -41,7 +42,10 @@ if (state.location === '/') {
 
 history.listen( ({location}) => {
     state = Object.assign({}, state, {
-        location: state.auth ? location.pathname : '/admin-auth'
+        location: 
+        // state.auth ? 
+        location.pathname 
+        // : '/admin-auth'
     });
     renderApp(state);
 });
