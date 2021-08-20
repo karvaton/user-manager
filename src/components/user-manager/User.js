@@ -2,11 +2,6 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import LayerList from "./LayerList";
 
-const Buttons = () => (
-    <div className="buttons">
-        <button className="delete-user">✕</button>
-    </div>
-);
 
 const PasswordForm = () => (
     <form name="password">
@@ -50,9 +45,14 @@ class User extends Component {
             <div className="list">
                 <UserInfo login={login} name={name} email={email}>
                     <PasswordForm />
-                    <LayerList login={login} modalWindow={this.props.modalWindow} />
+                    <LayerList
+                        login={login}
+                        modalWindow={this.props.modalWindow}
+                    />
                 </UserInfo>
-                <Buttons />
+                <div className="buttons">
+                    <button className="delete-user">✕</button>
+                </div>
             </div>
         );
     }

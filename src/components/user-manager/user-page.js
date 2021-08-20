@@ -1,6 +1,6 @@
 import { Component } from "react";
 import UserList from "./UserList";
-import ModalWindows from "./ModalWindows";
+import ModalWindows from "./modal-windows/ModalWindows";
 
 class UserManager extends Component {
     constructor(props) {
@@ -40,12 +40,12 @@ class UserManager extends Component {
         return [
             <UserList key="user-list" modalWindow={this.openModalWindow} />,
             modalWindow.open && (
-                <ModalWindows 
+                <ModalWindows
                     key="modal-window"
                     close={this.closeModalWindow}
-                    window={ window }
+                    window={modalWindow.window}
                 />
-            )
+            ),
         ];
     }
 }

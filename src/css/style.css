@@ -1608,10 +1608,9 @@ p {
 	font-weight: 600;
 }
 
-.mydiv {
+.modal-window {
 	position: absolute;
 	flex-direction: column;
-	/*border: solid 1px black;*/
 	border-radius: 5px;
 	box-shadow: 0 0 5px 1px gray;
 	background: #fafafa;
@@ -1619,9 +1618,19 @@ p {
 	width: 70vw;
 	height: 80vh;
 	font-family: Arial;
-	display: none;
+}
+.modal-window > * {
+	width: 100%;
 }
 #add-layers {display: none;}
+.no-layers {
+	 font-size: 10pt;
+	 color: grey;
+	 margin: auto;
+}
+.modal-buttons {
+	justify-content: flex-end;
+}
 
 #layer-settings {
 	flex-direction: inherit;
@@ -1725,7 +1734,7 @@ p {
 	overflow-y: auto;
 	flex-direction: column;
 	padding: 3px;
-	height: 50vh;
+	flex: 1;
 	background-color: #fff;
 }
 

@@ -30,7 +30,7 @@ LayerRow.propTypes = {
 
 
 const LayerInfo = () => (
-    <div id="add-layers-background"></div>
+    <div id="add-layers-background" />
 );
 
 

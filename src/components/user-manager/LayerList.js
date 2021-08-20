@@ -1,6 +1,7 @@
 import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
+import Loading from '../common/Loading';
 
 class LayerList extends Component {
     constructor(props) {
@@ -8,6 +9,7 @@ class LayerList extends Component {
 
         this.state = {
             list: [],
+            loading: true,
         }
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
@@ -22,7 +24,7 @@ class LayerList extends Component {
                 return res.json();
             })
             .then((list) => {
-                this.setState(() => ({ list }));
+                this.setState(() => ({ list, loading: false }));
             })
             .catch(err => console.log(err));
     }
@@ -33,14 +35,12 @@ class LayerList extends Component {
     }
 
     handlerReplaceLayer(currentId, direction) {
-        const next = direction === 'up' ? -1 : 0;
-        const list = [...this.state.list];
-
-        const currentLayer = list.filter(({lid}) => lid === currentId)[0];
-        const startIndex = list.indexOf(currentLayer) + next;
-
-        const prevLayer = list[startIndex],
-            nextLayer = list[startIndex + 1];
+        const next = direction === 'up' ? -1 : 0,
+              list = [...this.state.list],
+              currentLayer = list.filter(({lid}) => lid === currentId)[0],
+              startIndex = list.indexOf(currentLayer) + next,
+              prevLayer = list[startIndex],
+              nextLayer = list[startIndex + 1];
         
         list.splice(startIndex, 2, nextLayer, prevLayer);
         this.setState({ list });
@@ -53,12 +53,12 @@ class LayerList extends Component {
 
     render() {
         const { name } = this.props;
-        const { list } = this.state;
+        const { list, loading } = this.state;
 
         return (
             <div className="line">
                 <div className="typename" name={name}>
-                Доступні шари:
+                    Доступні шари:
                 </div>
                 <div className="wms">
                     <div className="wms-list">
@@ -71,21 +71,29 @@ class LayerList extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {list.length ?
-                                    list.map(layer => 
-                                        <Layer
-                                            key={layer.lid}
-                                            layer={layer}
-                                            removeLayer={this.handlerRemoveLayer}
-                                            replaceLayer={this.handlerReplaceLayer}
-                                            setUp={this.setUpLayer}
-                                        />
-                                    )
-
-                                    : <tr className="layer-line">
-                                        <td colSpan="3">Відсутні</td>
+                                {loading ? 
+                                    <tr>
+                                        <td colSpan="6">
+                                            <Loading />
+                                        </td>
                                     </tr>
-                                }
+                                 : 
+                                    (list.length ?
+                                        list.map(layer => 
+                                            <Layer
+                                                key={layer.lid}
+                                                layer={layer}
+                                                removeLayer={this.handlerRemoveLayer}
+                                                replaceLayer={this.handlerReplaceLayer}
+                                                setUp={this.setUpLayer}
+                                            />
+                                        )
+
+                                        : <tr className="layer-line">
+                                            <td colSpan="3">Відсутні</td>
+                                        </tr>
+                                    )
+                                }                                
                             </tbody>
                         </table>
                     </div>
