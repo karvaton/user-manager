@@ -2,6 +2,9 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 import Loading from '../common/Loading';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import {removeLayer} from '../../actions/layers'
 
 class LayerList extends Component {
     constructor(props) {
@@ -83,7 +86,7 @@ class LayerList extends Component {
                                             <Layer
                                                 key={layer.lid}
                                                 layer={layer}
-                                                removeLayer={this.handlerRemoveLayer}
+                                                removeLayer={this.removeLayer}
                                                 replaceLayer={this.handlerReplaceLayer}
                                                 setUp={this.setUpLayer}
                                             />
@@ -115,6 +118,5 @@ LayerList.propTypes = {
     name: PropTypes.string,
     list: PropTypes.arrayOf(PropTypes.object),
 }
-
 
 export default LayerList;

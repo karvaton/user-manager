@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import './index.css';
 
 import App from './App';
@@ -11,18 +12,23 @@ import Router from './components/router/router';
 import Route from "./components/router/route";
 
 import reportWebVitals from './reportWebVitals';
+import configureStore from './store/configureStore';
+import initialState from './constants/initialState';
 
+const store = configureStore(initialState);
 
 export const renderApp = (state, callback = () => {}) => {
     ReactDOM.render(
-        <Router {...state}>
-            <Route path="" component={App}>
-                <Route path="/admin-auth" component={Login} />
-                <Route path="/register-user" component={UserManager} />
-                <Route path="/user-manager" component={UserManager} />
-                <Route path="/edits-manager" component={Edits} />
-            </Route>
-        </Router>,
+        <Provider store={store}>
+            <Router {...state}>
+                <Route path="" component={App}>
+                    <Route path="/admin-auth" component={Login} />
+                    <Route path="/register-user" component={UserManager} />
+                    <Route path="/user-manager" component={UserManager} />
+                    <Route path="/edits-manager" component={Edits} />
+                </Route>
+            </Router>
+        </Provider>,
         document.getElementById("root"),
         callback
     );
@@ -34,18 +40,14 @@ let state = {
 }
 
 if (state.location === '/') {
-    // state.auth ? 
         state.location = "/user-manager"
-        // : state.location = "/admin-auth";
     navigate(state.location);
 }
 
 history.listen( ({location}) => {
     state = Object.assign({}, state, {
         location: 
-        // state.auth ? 
         location.pathname 
-        // : '/admin-auth'
     });
     renderApp(state);
 });

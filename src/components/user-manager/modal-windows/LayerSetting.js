@@ -18,8 +18,14 @@ class LayerSetting extends Component {
         this.setState(() => ({title}));
     }
 
+    shouldComponentUpdate({accept, done}) {
+        // console.log(nextProps);
+        accept && console.log(this.props.layer);
+        done();
+        return true;
+    }
+
     render() {
-        console.log(this.props.layer);
         const { workspace, layer_name, } = this.props.layer;
         const { title, } = this.state;
         return (
