@@ -2,9 +2,9 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 import Loading from '../common/Loading';
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import {removeLayer} from '../../actions/layers'
+// import { connect } from "react-redux";
+// import { bindActionCreators } from "redux";
+// import {removeLayer} from '../../actions/layers'
 
 class LayerList extends Component {
     constructor(props) {
