@@ -1,25 +1,33 @@
 import { Component } from "react";
 import Tunel from "../common/tunel";
+import Loading from "../common/Loading";
+import Layer from "./Layer";
 
 const styles = {
     form: {
-        flexDirection: 'column',
-        margin: '0 15px'
+        flexDirection: "column",
+        margin: "0 15px",
     },
     layerName: {
-        display: 'inline-block',
-        width: '81%'
+        display: "inline-block",
+        width: "81%",
     },
     noLayers: {
-        fontSize: '10pt',
-        color: 'grey',
-        padding: '26px 65px'
+        fontSize: "10pt",
+        color: "grey",
+        padding: "26px 65px",
     },
     submitButton: {
-        width: '250px'
-    }
-}
-
+        width: "250px",
+    },
+    loader: {
+        height: "90px",
+        width: "90px",
+        borderWidth: '8px',
+        position: 'relative',
+        top: '25%',
+    },
+};
 
 const fields = [
     {
@@ -42,14 +50,30 @@ const fields = [
         text: 'Пароль',
         placeholder: "Придумайте пароль"
     },
-]
+];
+
+
+function toDouble(input) {
+    let output = "", i = 0;
+    for (i = 0; i < input.length; i++) {
+        output += input[i].charCodeAt(0).toString(2) + " ";
+    }
+    return output;
+}
+
+function codeStr(text) {
+    let input = toDouble(text).split(/\s/).join("");
+    let str = parseInt(input, 2).toString(36);
+    let twoZero = str.indexOf("00");
+    return str.slice(0, twoZero);
+}
 
 
 const FormField = ({ id, text, placeholder, value, func }) => (
     <Tunel>
         <label htmlFor={id}>{text}</label>
         <input
-            type="text"
+            type={id === "password" ? id : "text"}
             id={id}
             className="form-content"
             name={id}
@@ -67,74 +91,228 @@ class UserForm extends Component {
         super(props);
 
         this.state = {
-            name: '',
-            email: '',
-            login: '',
-            password: '',
-            workspaceList: [''],
-            workspace: '',
-            dbases: [''],
-            dbname: '',
-            dbpass: '',
-            layers: []
-        }
+            name: "",
+            email: "",
+            login: "",
+            password: "",
+            workspaceList: [],
+            workspace: "",
+            dbases: [],
+            dbname: "",
+            dbpass: "",
+            availableList: [],
+            layers: [],
+            loading: false,
+            print: false
+        };
         this.input = this.input.bind(this);
         this.switchSelect = this.switchSelect.bind(this);
+        this.fetchGroups = this.fetchGroups.bind(this);
+        this.fetchLayers = this.fetchLayers.bind(this);
+        this.getSublayers = this.getSublayers.bind(this);
+        this.getLayerData = this.getLayerData.bind(this);
+        this.getLayerList = this.getLayerList.bind(this);
+        this.addLayerHandler = this.addLayerHandler.bind(this);
+        this.removeLayerHandler = this.removeLayerHandler.bind(this);
+        this.createUser = this.createUser.bind(this);
+        this.togglePrint = this.togglePrint.bind(this);
+    }
+
+    createUser() {
+        const { name, email, login, password, layers = [], print } = this.state;
+        console.log({name, email, login, password, layers, print });
+    }
+
+    addLayerHandler(layer) {
+        const { layers, workspace } = this.state;
+        layer.workspace = workspace;
+        layers.push(layer);
+        this.setState(() => ({layers}));
+    }
+
+    removeLayerHandler(layerId) {
+        const layerList = this.state.layers;
+        const layers = layerList.filter(({id}) => id !== layerId);
+        this.setState(() => ({ layers }));
     }
 
     input(e) {
         e.preventDefault();
         const { name, value } = e.target;
         this.setState(() => ({
-            [name]: value
+            [name]: value,
         }));
     }
 
     switchSelect(e) {
         e.preventDefault();
         const { workspaceList, dbases } = this.state;
-        const {value, name} = e.target;
-
-        if (name === 'workspaces') {
-            this.setState(() => ({
-                workspace: workspaceList[value]
-            }));
-            this.getDBases(workspaceList[value]);
+        const { value, name } = e.target;
         
+        if (name === "workspaces") {
+            let workspace = workspaceList[value - 1] || '';
+            this.setState(() => ({ workspace }));
+            this.getDBases(workspace);
+
         } else if (name === "datastore") {
-            this.setState(() => ({
-                dbname: dbases[value]
-            }));
+            let dbname = dbases[value - 1] || '';
+            this.setState(() => ({ dbname }));
+
+            dbname ? this.getLayerList(this.state.workspace, dbases[value - 1])
+            .then((res) =>
+                this.setState({
+                    loading: false,
+                    availableList: res,
+                })
+            ) : this.setState({
+                availableList: [],
+            });
         }
     }
 
     getDBases(ws) {
-        fetch(`http://localhost:5000/geoserver/workspaces/${ws}/datastores`)
-            .then((res) => res.json())
-            .then((json) => json?.dataStores.dataStore?.map(({ name }) => name))
-            .then((ds) => {
-                ds = ds || [];
-                this.setState(() => ({
-                    dbases: ['', ...ds],
-                }));
-                // console.log(ds);
+        if (ws) {
+            fetch(`http://localhost:5000/geoserver/workspaces/${ws}/datastores`)
+                .then((res) => res.json())
+                .then((json) => json?.dataStores.dataStore?.map(({ name }) => name))
+                .then((ds) => {
+                    ds = ds || [];
+                    this.setState(() => ({
+                        dbases: [...ds],
+                        dbname: '',
+                    }));
+                });
+        } else {
+            this.setState(() => ({
+                dbases: [],
+                dbname: '',
+                availableList: [],
+            }));
+        }
+    }
+
+    async getLayerList(ws, ds) {
+        this.setState(() => ({loading: true}));
+        let layers = await this.fetchLayers(ws, ds);
+        let layergroups = await this.fetchGroups(ws);
+        return [...layergroups, ...layers];
+    }
+
+    async fetchGroups(ws) {
+        let res = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/layergroups`
+        );
+        let json = await res.json();
+        let groups = json?.layerGroups.layerGroup?.map(async ({ name }) => {
+            let group = await this.getSublayers(ws, name);
+            return group.layerGroup;
+        });
+
+        if (groups && groups.length) {
+            groups = await Promise.all(groups);
+
+            return groups.map(
+                ({ bounds, name, title, publishables }, index) => ({
+                    id: "g" + codeStr(name) + index.toString(36),
+                    name,
+                    title,
+                    sublayers: publishables.published.map(({ name }) => name),
+                    bbox: bounds,
+                })
+            );
+        } else {
+            return [];
+        }
+    }
+
+    async fetchLayers(ws, ds) {
+        let res = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes`
+        );
+        let json = await res.json();
+        let layers = json?.featureTypes?.featureType?.map(async ({ name }) => {
+            let info = {}// await this.getLayerData(ws, ds, name);
+            let id = "l" + name;
+            return info ? {name, id, ...info} : {name, id};
+        });
+        
+        if (layers && layers.length) {
+            layers = await Promise.all(layers);
+
+            return layers.filter((item) => !!item);
+        } else {
+            return [];
+        }
+    }
+
+    async getSublayers(ws, group) {
+        const res = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/layergroups/${group}`
+        );
+        const json = await res.json();
+        return json;
+    }
+
+    async getLayerData(ws, ds, layerId) {
+        const res1 = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/layers/${layerId}`
+        );
+        const res2 = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes/${layerId}`
+        );
+        const json1 = await res1.json();
+        const json2 = await res2.json();
+        const layer = json1.layer;
+        const feature = json2.featureType;
+        if (!(layer && feature)) return;
+        let {defaultStyle, styles} = layer;
+        console.log(layer);
+        
+        if (styles) {
+            styles = styles.style.filter(item => item !== "null").map(({name}) => ({name}));
+            styles.unshift({
+                name: defaultStyle.name,
+                isDefault: true
             });
+        }
+        let { title, srs, latLonBoundingBox } = feature;
+        return {
+            title,
+            styles,
+            srs,
+            bbox: latLonBoundingBox,
+        };        
     }
 
     componentDidMount() {
         fetch("http://localhost:5000/geoserver/workspaces")
-        .then(res => res.json())
-        .then(json => json?.workspaces.workspace.map(({ name }) => name))
-        .then(workspases => {
-            workspases = workspases || [];
-            this.setState(() => ({
-                workspaceList: ['', ...workspases]
-            }));
-        });
+            .then((res) => res.json())
+            .then((json) => json?.workspaces.workspace?.map(({ name }) => name))
+            .then((workspases) => {
+                workspases = workspases || [];
+                this.setState(() => ({
+                    workspaceList: [...workspases],
+                }));
+            });
+    }
+
+    togglePrint(e) {
+        const print = e.target.checked;
+        this.setState(() => ({ print }));
     }
 
     render() {
-        const {workspaceList, workspace, dbases, dbname, dbpass, layers} = this.state;
+        const {
+            workspaceList,
+            workspace,
+            dbases,
+            dbname,
+            dbpass,
+            availableList,
+            loading,
+            print
+        } = this.state;
+        // console.log(print);
 
         return (
             <div id="form" style={styles.form}>
@@ -154,10 +332,10 @@ class UserForm extends Component {
                     name="workspaces"
                     size="1"
                     className="form-content"
-                    value={workspaceList.indexOf(workspace)}
+                    value={workspaceList.indexOf(workspace) + 1}
                     onChange={(event) => this.switchSelect(event)}
                 >
-                    {workspaceList.map((item, index) => (
+                    {["", ...workspaceList].map((item, index) => (
                         <option key={index} value={index}>
                             {item}
                         </option>
@@ -169,11 +347,11 @@ class UserForm extends Component {
                     name="datastore"
                     size="1"
                     className="form-content"
-                    value={dbases.indexOf(dbname)}
+                    value={dbases.indexOf(dbname) + 1}
                     onChange={(event) => this.switchSelect(event)}
-                    disabled={!dbases.length}
+                    disabled={dbases.length === 0}
                 >
-                    {dbases.map((item, index) => (
+                    {["", ...dbases].map((item, index) => (
                         <option key={index} value={index}>
                             {item}
                         </option>
@@ -212,9 +390,27 @@ class UserForm extends Component {
                     <hr />
                 </div>
 
-                <div name="layers" id="available" className="form-content">
-                    {layers.length ? (
-                        layers.map((item) => <div>{item}</div>)
+                <div
+                    name="layers"
+                    id="available-layers"
+                    className="form-content"
+                >
+                    {loading ? (
+                        <Loading style={styles.loader} />
+                    ) : availableList.length ? (
+                        availableList.map(
+                            ({ name, title, id, styles, sublayers }) => (
+                                <Layer
+                                    id={id}
+                                    name={name}
+                                    title={title}
+                                    styles={styles}
+                                    sublayers={sublayers}
+                                    addLayer={this.addLayerHandler}
+                                    removeLayer={this.removeLayerHandler}
+                                />
+                            )
+                        )
                     ) : (
                         <p style={styles.noLayers}>
                             <i>Немає доступних шарів</i>
@@ -224,7 +420,13 @@ class UserForm extends Component {
 
                 <div>
                     <label htmlFor="print">
-                        <input type="checkbox" name="print" id="print" />
+                        <input
+                            type="checkbox"
+                            name="print"
+                            id="print"
+                            checked={print}
+                            onChange={this.togglePrint}
+                        />
                         Дозволити друк
                     </label>
                 </div>
@@ -237,6 +439,7 @@ class UserForm extends Component {
                     className="form-btn"
                     value="Зареєструвати користувача"
                     style={styles.submitButton}
+                    onClick={this.createUser}
                 />
                 <p id="done-msg"></p>
             </div>
