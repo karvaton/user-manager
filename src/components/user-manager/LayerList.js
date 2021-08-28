@@ -82,11 +82,11 @@ class LayerList extends Component {
                                     </tr>
                                  : 
                                     (list.length ?
-                                        list.map(layer => 
+                                        list.map((layer, index) => 
                                             <Layer
-                                                key={layer.lid}
+                                                key={layer.lid + index}
                                                 layer={layer}
-                                                removeLayer={this.removeLayer}
+                                                removeLayer={this.handlerRemoveLayer}
                                                 replaceLayer={this.handlerReplaceLayer}
                                                 setUp={this.setUpLayer}
                                             />

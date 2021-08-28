@@ -1,27 +1,23 @@
 import { Component } from "react";
-// import DATA from "../../data/users";
+import { connect } from "react-redux";
 import User from "./User";
+import { setUsers } from "../../actions/users";
+
 
 class UserList extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            users: [],
-        };
-    }
-
     componentDidMount() {
         fetch("http://localhost:5000/users")
             .then((response) => {
                 return response.json();
             })
             .then((users) => {
-                this.setState(() => ({ users }));
+                // this.setState(() => ({ users }));
+                this.props.setUsers(users);
             });
     }
 
     render() {
-        const userList = this.state.users;
+        const userList = this.props.users;
         return <div id="wrapper">
             {userList.map(item => {
                 console.log();
@@ -37,4 +33,17 @@ class UserList extends Component {
     }
 }
 
-export default UserList;
+const mapStateToProps = store => {
+    console.log(store);
+    return {
+        users: store.users.userList,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        setUsers: (users) => dispatch(setUsers(users)),
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserList);
