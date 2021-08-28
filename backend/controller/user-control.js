@@ -23,29 +23,19 @@ export async function getUser(req, res) {
     }
 }
 
-export async function getUserData(req, res) {
-    try {
-        const { login } = req.params;
-        const layers = (
-            await db.query(`SELECT * FROM test.user_data WHERE login = '${login}'`)
-        ).rows;
-        res.status(200).json(layers);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-}
 
 export async function createUser(req, res) {
     try {
-        const { id, login, name, password, email, status, print, db_conn } = req.body;
-        const result = await db.query(
+        const { login, name, password, email, status, print, entry } = req.body;
+        await db.query(
             `INSERT INTO test.users 
-            (id, login, name, password, email, status, print, db_conn)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, 
-            [id, login, name, password, email, status, print, db_conn]
+            (login, name, password, email, status, print, db_conn)
+            VALUES ($1, $2, md5($3), $4, $5, $6, $7)`,
+            [login, name, password, email, status, print, JSON.stringify(entry)]
         );
-         res.status(200).send(result);
+        res.status(200).json({message: "Користувача створено"});
     } catch (error) {
-        res.status(500).send(error);
+        console.log(error);
+        res.json({ message: "Не вдалося створити користувача" });
     }
 }

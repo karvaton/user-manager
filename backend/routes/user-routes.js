@@ -1,11 +1,12 @@
 import Router from "express";
-import * as control from "../controller/user-control.js";
+import * as userControl from "../controller/user-control.js";
+import * as dataControl from "../controller/data-control.js";
 
 const router = new Router();
 
-router.get("/", control.getUsers);
-router.get("/:login", control.getUser);
-router.get("/:login/layers", control.getUserData);
-router.post("/", control.createUser);
+router.get("/", userControl.getUsers);
+router.get("/:login", userControl.getUser);
+router.get("/:login/layers", dataControl.getUserData);
+router.post("/", userControl.createUser);
 
 export default router;
