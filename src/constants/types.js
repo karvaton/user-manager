@@ -10,6 +10,7 @@ const app = {
 
 const user = {
     DELETE: 'user/delete',
+    SET: 'user/set',
 }
 
 export {

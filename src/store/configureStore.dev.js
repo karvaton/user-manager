@@ -5,17 +5,17 @@ import rootReducer from '../reducers/root';
 
 let store;
 export default function configureStore(initialState) {
-    if (store) {
-        return store;
+    if (!store) {
+        const createdStore = createStore(
+            rootReducer,
+            initialState,
+            compose(
+                applyMiddleware(thunk),
+                window.devToolsExtension()
+            )
+        );
+        console.log(createdStore.getState());
+        store = createdStore;
     }
-    const createdStore = createStore(
-        rootReducer,
-        initialState,
-        compose(
-            applyMiddleware(thunk),
-            window.devToolsExtension()
-        )
-    );
-    store = createdStore;
     return store;
 };
