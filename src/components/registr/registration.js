@@ -2,6 +2,7 @@ import { Component } from "react";
 import Tunel from "../common/tunel";
 import Loading from "../common/Loading";
 import Layer from "./Layer";
+import { post } from "../../tools/ajax";
 
 const styles = {
     form: {
@@ -69,11 +70,11 @@ function codeStr(text) {
 }
 
 
-const FormField = ({ id, text, placeholder, value, func }) => (
+const FormField = ({ id, text, placeholder, value, func, type }) => (
     <Tunel>
         <label htmlFor={id}>{text}</label>
         <input
-            type={id === "password" ? id : "text"}
+            type={(type || id) === "password" ? "password" : "text"}
             id={id}
             className="form-content"
             name={id}
@@ -99,11 +100,12 @@ class UserForm extends Component {
             workspace: "",
             dbases: [],
             dbname: "",
-            dbpass: "",
             availableList: [],
             layers: [],
             loading: false,
-            print: false
+            print: false,
+            entry: {},
+            status: null
         };
         this.input = this.input.bind(this);
         this.switchSelect = this.switchSelect.bind(this);
@@ -116,23 +118,28 @@ class UserForm extends Component {
         this.removeLayerHandler = this.removeLayerHandler.bind(this);
         this.createUser = this.createUser.bind(this);
         this.togglePrint = this.togglePrint.bind(this);
+        this.getDBparams = this.getDBparams.bind(this);
     }
 
-    createUser() {
-        const { name, email, login, password, layers = [], print } = this.state;
-        console.log({name, email, login, password, layers, print });
+    async createUser() {
+        const { name, email, login, password, layers = [], print, entry, status = null } = this.state;
+        const user = { name, email, login, password, print, entry, status };
+        let userPost = await post.json("http://localhost:5000/users/", user);
+        let layersPost = await post.json("http://localhost:5000/layers/" + login, layers);
+        console.log(await userPost.json());
+        console.log(await layersPost.json());
     }
 
     addLayerHandler(layer) {
         const { layers, workspace } = this.state;
         layer.workspace = workspace;
         layers.push(layer);
-        this.setState(() => ({layers}));
+        this.setState(() => ({ layers }));
     }
 
     removeLayerHandler(layerId) {
         const layerList = this.state.layers;
-        const layers = layerList.filter(({id}) => id !== layerId);
+        const layers = layerList.filter(({ id }) => id !== layerId);
         this.setState(() => ({ layers }));
     }
 
@@ -144,29 +151,46 @@ class UserForm extends Component {
         }));
     }
 
-    switchSelect(e) {
+    inputPass(e) {
+        e.preventDefault();
+        const password = e.target.value;
+        const entry = this.state.entry;
+        entry.password = password;
+        this.setState(() => ({
+            entry
+        }));
+    }
+
+    async switchSelect(e) {
         e.preventDefault();
         const { workspaceList, dbases } = this.state;
         const { value, name } = e.target;
-        
+
         if (name === "workspaces") {
-            let workspace = workspaceList[value - 1] || '';
+            let workspace = workspaceList[value - 1] || "";
             this.setState(() => ({ workspace }));
             this.getDBases(workspace);
-
         } else if (name === "datastore") {
-            let dbname = dbases[value - 1] || '';
+            let dbname = dbases[value - 1] || "";
             this.setState(() => ({ dbname }));
 
-            dbname ? this.getLayerList(this.state.workspace, dbases[value - 1])
-            .then((res) =>
-                this.setState({
+            if (dbname) {
+                let res = await this.getLayerList(this.state.workspace, dbname);
+                let entry = await this.getDBparams(
+                    this.state.workspace,
+                    dbname
+                );
+                this.setState(() => ({
                     loading: false,
                     availableList: res,
-                })
-            ) : this.setState({
-                availableList: [],
-            });
+                    entry,
+                }));
+            } else {
+                this.setState(() => ({
+                    availableList: [],
+                    entry: {},
+                }));
+            }
         }
     }
 
@@ -174,25 +198,41 @@ class UserForm extends Component {
         if (ws) {
             fetch(`http://localhost:5000/geoserver/workspaces/${ws}/datastores`)
                 .then((res) => res.json())
-                .then((json) => json?.dataStores.dataStore?.map(({ name }) => name))
+                .then((json) =>
+                    json?.dataStores.dataStore?.map(({ name }) => name)
+                )
                 .then((ds) => {
                     ds = ds || [];
                     this.setState(() => ({
                         dbases: [...ds],
-                        dbname: '',
+                        dbname: "",
                     }));
                 });
         } else {
             this.setState(() => ({
                 dbases: [],
-                dbname: '',
+                dbname: "",
                 availableList: [],
             }));
         }
     }
 
+    async getDBparams(ws, ds) {
+        let res = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}`
+        );
+        let json = await res.json();
+        let entryKeys = ["host", "port", "database", "user", "schema"];
+        return json.dataStore.connectionParameters.entry
+            .filter((item) => entryKeys.includes(item["@key"]) && item["$"])
+            .reduce((entryObj, entry) => {
+                entryObj[entry["@key"]] = entry["$"];
+                return entryObj;
+            }, {});
+    }
+
     async getLayerList(ws, ds) {
-        this.setState(() => ({loading: true}));
+        this.setState(() => ({ loading: true }));
         let layers = await this.fetchLayers(ws, ds);
         let layergroups = await this.fetchGroups(ws);
         return [...layergroups, ...layers];
@@ -212,34 +252,17 @@ class UserForm extends Component {
             groups = await Promise.all(groups);
 
             return groups.map(
-                ({ bounds, name, title, publishables }, index) => ({
-                    id: "g" + codeStr(name) + index.toString(36),
-                    name,
-                    title,
-                    sublayers: publishables.published.map(({ name }) => name),
-                    bbox: bounds,
-                })
+                ({ bounds, name, title, publishables }, index) => {
+                    let idCode = index.toString(36);
+                    return {
+                        id: ("g" + codeStr(name) + idCode).slice(0, 16 - idCode.length),
+                        name,
+                        title,
+                        sublayers: publishables.published.map(({ name }) => name),
+                        bbox: bounds,
+                    }
+                }
             );
-        } else {
-            return [];
-        }
-    }
-
-    async fetchLayers(ws, ds) {
-        let res = await fetch(
-            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes`
-        );
-        let json = await res.json();
-        let layers = json?.featureTypes?.featureType?.map(async ({ name }) => {
-            let info = {}// await this.getLayerData(ws, ds, name);
-            let id = "l" + name;
-            return info ? {name, id, ...info} : {name, id};
-        });
-        
-        if (layers && layers.length) {
-            layers = await Promise.all(layers);
-
-            return layers.filter((item) => !!item);
         } else {
             return [];
         }
@@ -251,6 +274,26 @@ class UserForm extends Component {
         );
         const json = await res.json();
         return json;
+    }
+
+    async fetchLayers(ws, ds) {
+        let res = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes`
+        );
+        let json = await res.json();
+        let layers = json?.featureTypes?.featureType?.map(async ({ name }) => {
+            let info = {}; // await this.getLayerData(ws, ds, name);
+            let id = "l" + name;
+            return info ? { name, id, ...info } : { name, id };
+        });
+
+        if (layers && layers.length) {
+            layers = await Promise.all(layers);
+
+            return layers.filter((item) => !!item);
+        } else {
+            return [];
+        }
     }
 
     async getLayerData(ws, ds, layerId) {
@@ -265,14 +308,16 @@ class UserForm extends Component {
         const layer = json1.layer;
         const feature = json2.featureType;
         if (!(layer && feature)) return;
-        let {defaultStyle, styles} = layer;
+        let { defaultStyle, styles } = layer;
         console.log(layer);
-        
+
         if (styles) {
-            styles = styles.style.filter(item => item !== "null").map(({name}) => ({name}));
+            styles = styles.style
+                .filter((item) => item !== "null")
+                .map(({ name }) => ({ name }));
             styles.unshift({
                 name: defaultStyle.name,
-                isDefault: true
+                isDefault: true,
             });
         }
         let { title, srs, latLonBoundingBox } = feature;
@@ -281,7 +326,7 @@ class UserForm extends Component {
             styles,
             srs,
             bbox: latLonBoundingBox,
-        };        
+        };
     }
 
     componentDidMount() {
@@ -307,10 +352,10 @@ class UserForm extends Component {
             workspace,
             dbases,
             dbname,
-            dbpass,
+            entry: {password},
             availableList,
             loading,
-            print
+            print,
         } = this.state;
         // console.log(print);
 
@@ -358,13 +403,17 @@ class UserForm extends Component {
                     ))}
                 </select>
 
-                <FormField
-                    id="dbpass"
-                    text="Пароль бази даних"
-                    placeholder="Введіть пароль для бази даних"
-                    func={this.input}
-                    value={dbpass}
-                />
+                {dbname && (
+                    <FormField
+                        id="dbpass"
+                        text="Пароль бази даних"
+                        type="password"
+                        placeholder="Введіть пароль для бази даних"
+                        func={this.input}
+                        value={password}
+                        onChange={(event) => {}}
+                    />
+                )}
 
                 <label htmlFor="available">Доступні шари</label>
 
