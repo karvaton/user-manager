@@ -36,7 +36,7 @@ class UserList extends Component {
 const mapStateToProps = store => {
     console.log(store);
     return {
-        users: store.users.userList,
+        users: store.userList,
     }
 }
 

@@ -1,22 +1,16 @@
 import initialState from "../constants/initialState";
 import * as types from "../constants/types";
 
-export default function manageUsers(state = initialState, action) {
+export default function manageUsers(state = initialState.userList, action) {
     switch (action.type) {
         case types.user.DELETE:
             const { user } = action;
-            let users = state.userList.filter(({login}) => login !== user);
-            return {
-                ...state,
-                userList: [...users]
-            };
+            let users = state.filter(({login}) => login !== user);
+            return users;
 
         case (types.user.SET):
             const { userList } = action;
-            return {
-                ...state,
-                userList
-            }
+            return userList;
 
         default:
             return state;

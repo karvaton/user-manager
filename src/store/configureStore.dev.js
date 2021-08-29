@@ -14,7 +14,6 @@ export default function configureStore(initialState) {
                 window.devToolsExtension()
             )
         );
-        console.log(createdStore.getState());
         store = createdStore;
     }
     return store;
