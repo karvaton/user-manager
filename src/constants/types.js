@@ -2,6 +2,7 @@ const layer = {
     ADD: 'layer/add',
     CHANGE: 'layer/change',
     REMOVE: 'layer/remove',
+    SET: 'layer/set',
 }
 
 const app = {
@@ -9,6 +10,7 @@ const app = {
 }
 
 const user = {
+    SET_LAYERS: 'layers/set_layers',
     DELETE: 'user/delete',
     SET: 'user/set',
 }

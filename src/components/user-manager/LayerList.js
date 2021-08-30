@@ -2,7 +2,9 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 import Loading from '../common/Loading';
-// import { connect } from "react-redux";
+import { connect } from "react-redux";
+import { fetchLayers } from "../../actions/async/fetchLayers";
+import { setLayerOrder } from "../../actions/users";
 // import { bindActionCreators } from "redux";
 // import {removeLayer} from '../../actions/layers'
 
@@ -21,7 +23,11 @@ class LayerList extends Component {
     }
 
     componentDidMount() {
-        const { login } = this.props;
+        const { getLayers, login, layers, setLayers } = this.props;
+        getLayers();
+        const ids = layers.map(({id}) => id);
+        setLayers(login, ids);
+
         fetch(`http://localhost:5000/users/${login}/layers`)
             .then((res) => {
                 return res.json();
@@ -55,8 +61,9 @@ class LayerList extends Component {
     }
 
     render() {
-        const { name } = this.props;
-        const { list, loading } = this.state;
+        const { name, login, layers } = this.props;
+        const { loading } = this.state;
+        const list = layers.filter(layer => layer.login === login)
 
         return (
             <div className="line">
@@ -91,7 +98,6 @@ class LayerList extends Component {
                                                 setUp={this.setUpLayer}
                                             />
                                         )
-
                                         : <tr className="layer-line">
                                             <td colSpan="3">Відсутні</td>
                                         </tr>
@@ -119,4 +125,17 @@ LayerList.propTypes = {
     list: PropTypes.arrayOf(PropTypes.object),
 }
 
-export default LayerList;
+
+const mapStateToProps = (store) => {
+    const layers = [...store.layers];
+    return { layers };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getLayers: () => dispatch(fetchLayers()),
+        setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LayerList);

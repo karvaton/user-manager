@@ -2,18 +2,12 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import User from "./User";
 import { setUsers } from "../../actions/users";
+import { fetchUsers } from "../../actions/async/fetchUsers";
 
 
 class UserList extends Component {
     componentDidMount() {
-        fetch("http://localhost:5000/users")
-            .then((response) => {
-                return response.json();
-            })
-            .then((users) => {
-                // this.setState(() => ({ users }));
-                this.props.setUsers(users);
-            });
+        this.props.getUsers();
     }
 
     render() {
@@ -34,15 +28,14 @@ class UserList extends Component {
 }
 
 const mapStateToProps = store => {
-    console.log(store);
-    return {
-        users: store.userList,
-    }
+    const users = [...store.users];
+    return {users};
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         setUsers: (users) => dispatch(setUsers(users)),
+        getUsers: () => dispatch(fetchUsers()),
     };
 }
 

@@ -1,10 +1,11 @@
 import { combineReducers } from "redux";
 // import manageLayers from './layers';
-import manageUsers from './users';
+import users from './users';
+import layers from './layers';
 
 const rootReducer = combineReducers({
-    userList: manageUsers,
-    // layers: manageLayers,
+    users,
+    layers,
 });
 
 export default rootReducer;

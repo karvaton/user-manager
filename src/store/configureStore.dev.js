@@ -11,7 +11,7 @@ export default function configureStore(initialState) {
             initialState,
             compose(
                 applyMiddleware(thunk),
-                window.devToolsExtension()
+                window.__REDUX_DEVTOOLS_EXTENSION__()
             )
         );
         store = createdStore;

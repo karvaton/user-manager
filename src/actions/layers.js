@@ -3,21 +3,34 @@ import * as types from '../constants/types';
 export function addLayer(layer) {
     return {
         type: types.layer.ADD,
-        layer
+        payload: {
+            layer,
+        },
     }
 }
 
 export function changeLayer(id, layer) {
     return {
         type: types.layer.CHANGE,
-        id,
-        layer,
+        payload: {
+            id,
+            layer,
+        }
     };
 }
 
 export function removeLayer(id) {
     return {
         type: types.layer.REMOVE,
-        id,
+        payload: {
+            id,
+        },
+    };
+}
+
+export function setLayers(list) {
+    return {
+        type: types.layer.SET,
+        payload: [...list],
     };
 }

@@ -1,5 +1,5 @@
 const initialState = {
-    userList: [],
+    users: [],
 }
 
 export default initialState;

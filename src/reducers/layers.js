@@ -1,12 +1,14 @@
 import * as types from "../constants/types";
 
-export default function manageLayers(state = [], action) {
-    switch (action.type) {
+export default function layers(state = [], {type, payload}) {
+    switch (type) {
         case types.layer.ADD:
-            const { layer } = action;
-            let nextState = [...state];
-            nextState.push(layer);
+            const nextState = [...state];
+            nextState.push(payload);
             return nextState;
+
+        case types.layer.SET:
+            return [...payload];
     
         default:
             return state;
