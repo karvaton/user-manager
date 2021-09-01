@@ -39,7 +39,7 @@ class User extends Component {
         };
     }
     render() {
-        const {login, name, email} = this.props.user;
+        const {login, name, email } = this.props.user;
 
         return (
             <div className="list">

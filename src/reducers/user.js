@@ -1,22 +1,26 @@
 import * as types from "../constants/types";
+import layerReduser from './layers';
 
-export default function user(state, {type, payload}) {
+export default function user(user, {type, payload}) {
     switch (type) {
-        case types.user.SET:
-            return {
-                ...payload,
-                layers: [],
-            };
-    
         case types.user.SET_LAYERS:
-            return state.id !== payload.login ?
-                state : {
-                    ...state,
-                    ids: payload.ids
+            return user.login !== payload.login ?
+                user : 
+                {
+                    ...user,
+                    layers: payload.ids
                 }
 
+        case types.layers.CHANGE_ORDER:
+            user.login === payload.login && console.log(user.layers);
+            return user.login !== payload.login ?
+                user :
+                {
+                    ...user,
+                    layers: layerReduser(user.layers, payload)
+                }
 
         default:
-            return state;
+            return user;
     }
 }

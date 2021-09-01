@@ -1,8 +1,9 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import User from "./User";
-import { setUsers } from "../../actions/users";
+import { setLayerOrder, setUsers } from "../../actions/users";
 import { fetchUsers } from "../../actions/async/fetchUsers";
+import { fetchLayers } from "../../actions/async/fetchLayers";
 
 
 class UserList extends Component {
@@ -11,31 +12,35 @@ class UserList extends Component {
     }
 
     render() {
-        const userList = this.props.users;
+        const { users } = this.props;
         return <div id="wrapper">
-            {userList.map(item => {
-                console.log();
-                return (
+            {
+                /* loading === 'user' ?
+                <Loading />
+                : */
+                users.map(user => 
                     <User
-                        key={item.id}
-                        user={item}
+                        key={user.id}
+                        user={user}
                         modalWindow={this.props.modalWindow}
                     />
-                );
-            })}
+                )
+            }
         </div>
     }
 }
 
 const mapStateToProps = store => {
-    const users = [...store.users];
-    return {users};
+    const {users, layers, } = store;
+    return {users, layers, };
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         setUsers: (users) => dispatch(setUsers(users)),
         getUsers: () => dispatch(fetchUsers()),
+        getLayers: () => dispatch(fetchLayers()),
+        setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
     };
 }
 

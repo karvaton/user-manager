@@ -1,41 +1,24 @@
 import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
-import Loading from '../common/Loading';
 import { connect } from "react-redux";
-import { fetchLayers } from "../../actions/async/fetchLayers";
-import { setLayerOrder } from "../../actions/users";
-// import { bindActionCreators } from "redux";
-// import {removeLayer} from '../../actions/layers'
+import { changeOrder } from '../../actions/layers';
+// import Loading from '../common/Loading';
+// import { connect } from "react-redux";
+
 
 class LayerList extends Component {
     constructor(props) {
         super(props);
 
+        const { layers } = this.props;
         this.state = {
-            list: [],
-            loading: true,
+            layers
         }
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
         // this.openAddLayersWindow = this.openAddLayersWindow.bind(this);
-    }
-
-    componentDidMount() {
-        const { getLayers, login, layers, setLayers } = this.props;
-        getLayers();
-        const ids = layers.map(({id}) => id);
-        setLayers(login, ids);
-
-        fetch(`http://localhost:5000/users/${login}/layers`)
-            .then((res) => {
-                return res.json();
-            })
-            .then((list) => {
-                this.setState(() => ({ list, loading: false }));
-            })
-            .catch(err => console.log(err));
     }
 
     handlerRemoveLayer(id) {
@@ -44,15 +27,8 @@ class LayerList extends Component {
     }
 
     handlerReplaceLayer(currentId, direction) {
-        const next = direction === 'up' ? -1 : 0,
-              list = [...this.state.list],
-              currentLayer = list.filter(({lid}) => lid === currentId)[0],
-              startIndex = list.indexOf(currentLayer) + next,
-              prevLayer = list[startIndex],
-              nextLayer = list[startIndex + 1];
-        
-        list.splice(startIndex, 2, nextLayer, prevLayer);
-        this.setState({ list });
+        const { login, changeOrder } = this.props;
+        changeOrder({login, currentId, direction});
     }
 
     setUpLayer(id) {
@@ -61,13 +37,11 @@ class LayerList extends Component {
     }
 
     render() {
-        const { name, login, layers } = this.props;
-        const { loading } = this.state;
-        const list = layers.filter(layer => layer.login === login)
+        const { layers } = this.props;
 
         return (
             <div className="line">
-                <div className="typename" name={name}>
+                <div className="typename">
                     Доступні шари:
                 </div>
                 <div className="wms">
@@ -81,15 +55,8 @@ class LayerList extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {loading ? 
-                                    <tr>
-                                        <td colSpan="6">
-                                            <Loading />
-                                        </td>
-                                    </tr>
-                                 : 
-                                    (list.length ?
-                                        list.map((layer, index) => 
+                                {layers.length ?
+                                        layers.map((layer, index) => 
                                             <Layer
                                                 key={layer.lid + index}
                                                 layer={layer}
@@ -101,7 +68,6 @@ class LayerList extends Component {
                                         : <tr className="layer-line">
                                             <td colSpan="3">Відсутні</td>
                                         </tr>
-                                    )
                                 }                                
                             </tbody>
                         </table>
@@ -122,19 +88,17 @@ class LayerList extends Component {
 }
 LayerList.propTypes = {
     name: PropTypes.string,
-    list: PropTypes.arrayOf(PropTypes.object),
+    layers: PropTypes.arrayOf(PropTypes.object),
 }
 
-
-const mapStateToProps = (store) => {
-    const layers = [...store.layers];
+const mapStateToProps = (store, state) => {
+    const { layers } = store.users.filter(({login}) => login === state.login)[0];
     return { layers };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getLayers: () => dispatch(fetchLayers()),
-        setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
+        changeOrder: (layers, direction, currentId) => dispatch(changeOrder(layers, direction, currentId)),
     };
 };
 

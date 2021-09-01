@@ -10,13 +10,18 @@ const app = {
 }
 
 const user = {
-    SET_LAYERS: 'layers/set_layers',
+    SET_LAYERS: 'user/set_layers',
     DELETE: 'user/delete',
     SET: 'user/set',
 }
+
+const layers = {
+    CHANGE_ORDER: "layers/change_order",
+};
 
 export {
     app,
     user,
     layer,
+    layers,
 }

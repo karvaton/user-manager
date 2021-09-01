@@ -34,3 +34,14 @@ export function setLayers(list) {
         payload: [...list],
     };
 }
+
+export function changeOrder({login, currentId, direction}) {
+    return {
+        type: types.layers.CHANGE_ORDER,
+        payload: {
+            login, 
+            direction,
+            currentId,
+        },
+    };
+}

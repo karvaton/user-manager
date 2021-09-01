@@ -14,6 +14,9 @@ export default function manageUsers(state = initialState.users, {type, payload})
         case (types.user.SET_LAYERS):
             return users.setLayers(state, payload);
 
+        case (types.layers.CHANGE_ORDER):
+            return users.changeLayerOrder(state, payload);
+            
         default:
             return state;
     }
