@@ -37,7 +37,7 @@ class LayerList extends Component {
     }
 
     render() {
-        const { layers } = this.props;
+        const layers = this.props.layers.sort((a, b) => a.order_id - b.order_id);
 
         return (
             <div className="line">
@@ -56,18 +56,18 @@ class LayerList extends Component {
                             </thead>
                             <tbody>
                                 {layers.length ?
-                                        layers.map((layer, index) => 
-                                            <Layer
-                                                key={layer.lid + index}
-                                                layer={layer}
-                                                removeLayer={this.handlerRemoveLayer}
-                                                replaceLayer={this.handlerReplaceLayer}
-                                                setUp={this.setUpLayer}
-                                            />
-                                        )
-                                        : <tr className="layer-line">
-                                            <td colSpan="3">Відсутні</td>
-                                        </tr>
+                                    layers.map((layer, index) => 
+                                        <Layer
+                                            key={layer.order_id}
+                                            layer={layer}
+                                            removeLayer={this.handlerRemoveLayer}
+                                            replaceLayer={this.handlerReplaceLayer}
+                                            setUp={this.setUpLayer}
+                                        />
+                                    )
+                                    : <tr className="layer-line">
+                                        <td colSpan="3">Відсутні</td>
+                                    </tr>
                                 }                                
                             </tbody>
                         </table>

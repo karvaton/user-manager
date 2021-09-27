@@ -3,7 +3,13 @@ import * as userAction from "../../actions/user";
 import * as layerAction from "../../actions/layers";
 
 export function set(users) {
-    return [...users]
+    // return users.map(user =>
+    //     userReduser(
+    //         user,
+    //         userAction.setUser(user)
+    //     )
+    // );
+    return [...users];
 }
 
 export function remove(users, user) {

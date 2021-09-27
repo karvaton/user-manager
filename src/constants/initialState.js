@@ -1,6 +1,6 @@
 const initialState = {
     users: [],
-    layers: [],
+    // layers: [],
     // loading: false,
 }
 

@@ -1,27 +1,26 @@
 import * as types from "../constants/types";
 
-export default function layers(state = [], {type, payload}) {
-    switch (type) {
+export default function layers(state, action) {
+    switch (action.type) {
         case types.layer.ADD:
             const nextState = [...state];
-            nextState.push(payload);
+            nextState.push(action.payload);
             return nextState;
 
         case types.layer.SET:
-            return [...payload];
+            return [...action.payload];
         
         case types.layers.CHANGE_ORDER: 
-            console.log(state);
-            const next = payload.direction === 'up' ? -1 : 0,
+            const next = action.payload.direction === 'up' ? -1 : 0,
                 layers = [...state],
-                currentLayer = layers.filter(({lid}) => lid === payload.currentId)[0],
+                currentLayer = layers.filter(({lid}) => lid === action.payload.currentId)[0],
                 startIndex = layers.indexOf(currentLayer) + next,
-                prevLayer = layers[startIndex],
-                nextLayer = layers[startIndex + 1];
+                prevLayer = { ...layers[startIndex] },
+                nextLayer = { ...layers[startIndex + 1] };
         
-            // console.log(layers);
+            prevLayer.order_id += 1;
+            nextLayer.order_id -= 1;
             layers.splice(startIndex, 2, nextLayer, prevLayer);
-            // console.log(layers);
             return layers;
 
         default:
