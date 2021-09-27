@@ -14,6 +14,7 @@ export default function user(user, action) {
         case types.user.SET:
             return {
                 ...user,
+                print: user.print === "true",
                 layerOrder: user.layers.map(({ lid }) => lid)
             }
 
@@ -24,6 +25,17 @@ export default function user(user, action) {
                 return {
                     ...user,
                     layers: layerReduser(user.layers, action),
+                }
+            }
+
+        case types.user.PRINT:
+            if (user.login !== action.payload) {
+                return { ...user };
+            } else {
+                const print = !user.print;
+                return {
+                    ...user,
+                    print,
                 }
             }
 

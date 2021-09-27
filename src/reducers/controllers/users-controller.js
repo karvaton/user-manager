@@ -9,7 +9,7 @@ export function set(users) {
     //         userAction.setUser(user)
     //     )
     // );
-    return [...users];
+    return users.map(user => userReduser(user, userAction.setUser(user)));
 }
 
 export function remove(users, user) {
@@ -22,4 +22,8 @@ export function setLayers(users, {ids}) {
 
 export function changeLayerOrder(users, payload) {
     return users.map(user => userReduser(user, layerAction.changeOrder(payload)));
+}
+
+export function togglePrint(users, payload) {
+    return users.map(user => userReduser(user, userAction.changePrint(payload)));
 }

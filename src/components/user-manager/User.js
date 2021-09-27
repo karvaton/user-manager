@@ -1,26 +1,59 @@
-import { Component } from "react";
+import { useState } from "react";
 import PropTypes from 'prop-types';
 import LayerList from "./LayerList";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePassword } from "../../actions/async/updatePassword";
+import { changePrint } from "../../actions/user";
 
 
-const PasswordForm = () => (
-    <form name="password">
-        Пароль:
-        <input type="password" name="password" />
-        <input type="submit" className="change-password" value="Змінити" />
-    </form>
-);
+function PasswordForm(props) {
+    const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
 
-const UserInfo = ({ login, name, email, children }) => (
-    <div className="query" name="admin">
-        <div name={login}>Логін: {login}</div>
-        <div name={name}>І'мя: {name}</div>
-        <div name={email}>e-mail: {email}</div>
-        <div className="wrap-info">
-            {children}
+    const changePassword = (e) => {
+        e.preventDefault();
+        return e.target.value;
+    }
+
+    const submit = (e) => {
+        e.preventDefault();
+        dispatch(updatePassword(props.login, password));
+    }
+
+    return (
+        <form name="password">
+            Пароль:
+            <input 
+                type="password" 
+                name="password" 
+                value={password} 
+                onChange={event => setPassword(changePassword(event))} 
+            />
+            <input 
+                type="submit" 
+                className="change-password" 
+                value="Змінити" 
+                onClick={event => submit(event)}
+            />
+        </form>
+    );
+}
+PasswordForm.propTypes = {
+    login: PropTypes.string.isRequired,
+}
+
+function UserInfo({ login, name, email, children }) {
+    return (
+        <div className="query" name="admin">
+            <div name={login}>Логін: {login}</div>
+            <div name={name}>І'мя: {name}</div>
+            <div name={email}>e-mail: {email}</div>
+            <div className="wrap-info">
+                {children}
+            </div>
         </div>
-    </div>
-);
+    );
+}
 UserInfo.propTypes = {
     login: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -28,38 +61,33 @@ UserInfo.propTypes = {
 };
 
 
-class User extends Component {
-    constructor(props) {
-        super(props);
-        
-        const { print } = this.props.user;
+function User(props) {
+    const { login, name, email, print } = useSelector(state => state.users.filter(user => user.login === props.login)[0]);
+    const dispatch = useDispatch();
 
-        this.state = {
-            print,
-        };
-    }
-    render() {
-        const {login, name, email } = this.props.user;
-
-        return (
-            <div className="list">
-                <UserInfo login={login} name={name} email={email}>
-                    <PasswordForm />
-                    <LayerList
-                        login={login}
-                        modalWindow={this.props.modalWindow}
+    return (
+        <div className="list">
+            <UserInfo login={login} name={name} email={email}>
+                <PasswordForm login={login} />
+                <LayerList login={login} />
+                <p name="print" className="print">
+                    Дозволити друк
+                    <input
+                        type="checkbox"
+                        checked={print}
+                        onChange={() => dispatch(changePrint(login))}
                     />
-                </UserInfo>
-                <div className="buttons">
-                    <button className="delete-user">✕</button>
-                </div>
+                </p>
+            </UserInfo>
+            <div className="buttons">
+                <button className="delete-user">✕</button>
             </div>
-        );
-    }
+        </div>
+    );
 }
 User.propTypes = {
-    user: PropTypes.object.isRequired,
-    modalWindow: PropTypes.func
+    login: PropTypes.string.isRequired,
 };
+
 
 export default User;

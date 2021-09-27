@@ -1,27 +1,21 @@
-const layer = {
+export const layer = {
     ADD: 'layer/add',
     CHANGE: 'layer/change',
     REMOVE: 'layer/remove',
     SET: 'layer/set',
 }
 
-const app = {
+export const app = {
     ERROR: 'app/error',
 }
 
-const user = {
+export const user = {
     SET_LAYERS: 'user/set_layers',
     DELETE: 'user/delete',
     SET: 'user/set',
+    PRINT: 'user/print',
 }
 
-const layers = {
+export const layers = {
     CHANGE_ORDER: "layers/change_order",
 };
-
-export {
-    app,
-    user,
-    layer,
-    layers,
-}

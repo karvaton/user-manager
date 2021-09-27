@@ -39,3 +39,21 @@ export async function createUser(req, res) {
         res.json({ message: "Не вдалося створити користувача" });
     }
 }
+
+export async function updatePassword(req, res) {
+    try {
+        const { login, password } = req.body;
+
+        const banks = (
+            await db.query(
+                `UPDATE test.users
+                SET password = md5('${password}')
+                WHERE login = '${login}' RETURNING  *`
+            )
+        ).rows[0];
+        res.status(200).send(banks);
+    } catch (error) {
+        console.log(error);
+        res.json({ message: "Не вдалося змінити пароль"})
+    }
+}

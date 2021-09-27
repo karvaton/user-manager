@@ -14,18 +14,12 @@ class UserList extends Component {
     render() {
         const { users } = this.props;
         return <div id="wrapper">
-            {
-                /* loading === 'user' ?
-                <Loading />
-                : */
-                users.map(user => 
-                    <User
-                        key={user.id}
-                        user={user}
-                        modalWindow={this.props.modalWindow}
-                    />
-                )
-            }
+            {users.map(({id, login}) => 
+                <User
+                    key={id}
+                    login={login}
+                />
+            )}
         </div>
     }
 }
