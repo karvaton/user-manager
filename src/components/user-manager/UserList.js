@@ -1,9 +1,9 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import User from "./User";
-import { setLayerOrder, setUsers } from "../../actions/users";
-import { fetchUsers } from "../../actions/async/fetchUsers";
-import { fetchLayers } from "../../actions/async/fetchLayers";
+import { setLayerOrder, setUsers } from "../../state/actions/users";
+import { fetchUsers } from "../../state/actions/async/fetchUsers";
+import { fetchLayers } from "../../state/actions/async/fetchLayers";
 
 
 class UserList extends Component {

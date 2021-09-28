@@ -12,8 +12,8 @@ import { history, navigate } from './history/history';
 import Router from './components/router/router';
 import Route from "./components/router/route";
 
-import configureStore from './store/configureStore';
-import initialState from './constants/initialState';
+import configureStore from "./state/store/configureStore";
+import initialState from "./state/constants/initialState";
 
 import reportWebVitals from './reportWebVitals';
 

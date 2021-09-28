@@ -2,8 +2,8 @@ import { useState } from "react";
 import PropTypes from 'prop-types';
 import LayerList from "./LayerList";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePassword } from "../../actions/async/updatePassword";
-import { changePrint } from "../../actions/user";
+import { updatePassword } from "../../state/actions/async/updatePassword";
+import { changePrint } from "../../state/actions/user";
 
 
 function PasswordForm(props) {

@@ -2,7 +2,7 @@ import { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 import { connect } from "react-redux";
-import { changeOrder } from '../../actions/layers';
+import { changeOrder } from "../../state/actions/layers";
 
 
 class LayerList extends Component {
@@ -21,7 +21,6 @@ class LayerList extends Component {
         this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
-        // this.openAddLayersWindow = this.openAddLayersWindow.bind(this);
     }
 
     handlerRemoveLayer(id) {
@@ -73,7 +72,7 @@ class LayerList extends Component {
                                         />
                                     ))
                                 ) : (
-                                    <tr className="layer-line">
+                                    <tr>
                                         <td colSpan="3">Відсутні</td>
                                     </tr>
                                 )}
