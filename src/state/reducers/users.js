@@ -17,8 +17,8 @@ export default function manageUsers(state = initialState.users, {type, payload})
         case (types.layers.CHANGE_ORDER):
             return users.changeLayerOrder(state, payload);
         
-        case (types.user.PRINT):
-            return users.togglePrint(state, payload);
+        case (types.user.UPDATE):
+            return users.update(state, payload);
             
         default:
             return state;

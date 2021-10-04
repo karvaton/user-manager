@@ -2,8 +2,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import User from "./User";
 import { setLayerOrder, setUsers } from "../../state/actions/users";
-import { fetchUsers } from "../../state/actions/async/fetchUsers";
-import { fetchLayers } from "../../state/actions/async/fetchLayers";
+import { fetchUsers } from "../../state/actions/async/user";
 
 
 class UserList extends Component {
@@ -33,7 +32,7 @@ const mapDispatchToProps = dispatch => {
     return {
         setUsers: (users) => dispatch(setUsers(users)),
         getUsers: () => dispatch(fetchUsers()),
-        getLayers: () => dispatch(fetchLayers()),
+        // getLayers: () => dispatch(fetchLayers()),
         setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
     };
 }

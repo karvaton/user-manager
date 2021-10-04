@@ -8,6 +8,7 @@ router.get("/", userControl.getUsers);
 router.get("/:login", userControl.getUser);
 router.get("/:login/layers", dataControl.getUserData);
 router.post("/", userControl.createUser);
-router.put("/", userControl.updatePassword);
+router.put("/:login", userControl.update);
+router.delete("/:login", userControl.deleteUser);
 
 export default router;

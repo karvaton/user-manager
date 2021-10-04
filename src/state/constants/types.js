@@ -13,7 +13,7 @@ export const user = {
     SET_LAYERS: 'user/set_layers',
     DELETE: 'user/delete',
     SET: 'user/set',
-    PRINT: 'user/print',
+    UPDATE: 'user/update',
 }
 
 export const layers = {

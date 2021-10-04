@@ -10,7 +10,12 @@ export const setLayers = (ids) => ({
     payload: ids,
 });
 
-export const changePrint = (login) => ({
-    type: types.user.PRINT,
-    payload: login
+export const update = user => ({
+    type: types.user.UPDATE,
+    payload: user
+});
+
+export const deleteUser = (login) => ({
+    type: types.user.DELETE,
+    payload: login,
 });

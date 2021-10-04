@@ -3,17 +3,16 @@ import * as userAction from "../../actions/user";
 import * as layerAction from "../../actions/layers";
 
 export function set(users) {
-    // return users.map(user =>
-    //     userReduser(
-    //         user,
-    //         userAction.setUser(user)
-    //     )
-    // );
     return users.map(user => userReduser(user, userAction.setUser(user)));
 }
 
-export function remove(users, user) {
-    return users.filter(({login}) => login !== user);
+export function remove(users, payload) {
+    const prevState = [...users];
+    const nextState = users.filter(({login}) => login !== payload);
+    if (prevState.length === nextState.length) {
+        alert(payload?.message || "Не вдалося створити користувача");
+    }
+    return nextState;
 }
 
 export function setLayers(users, {ids}) {
@@ -24,6 +23,6 @@ export function changeLayerOrder(users, payload) {
     return users.map(user => userReduser(user, layerAction.changeOrder(payload)));
 }
 
-export function togglePrint(users, payload) {
-    return users.map(user => userReduser(user, userAction.changePrint(payload)));
+export function update(users, payload) {
+    return users.map(user => userReduser(user, userAction.update(payload)));
 }

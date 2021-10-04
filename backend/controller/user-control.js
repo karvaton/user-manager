@@ -1,9 +1,10 @@
 import db from "../db.js";
+const TABLE = 'test.users';
 
 export async function getUsers(req, res) {
     try {
         const users = (
-            await db.query("SELECT * FROM test.users WHERE id >= 0")
+            await db.query(`SELECT * FROM ${TABLE} WHERE id >= 0`)
         ).rows;
         res.status(200).json(users);
     } catch (error) {
@@ -15,7 +16,7 @@ export async function getUser(req, res) {
     try {
         const { login } = req.params;
         const user = (
-            await db.query(`SELECT * FROM test.users WHERE login = '${login}'`)
+            await db.query(`SELECT * FROM ${TABLE} WHERE login = '${login}'`)
         ).rows[0];
         res.status(200).json(user);
     } catch (error) {
@@ -28,7 +29,7 @@ export async function createUser(req, res) {
     try {
         const { login, name, password, email, status, print, entry } = req.body;
         await db.query(
-            `INSERT INTO test.users 
+            `INSERT INTO ${TABLE} 
             (login, name, password, email, status, print, db_conn)
             VALUES ($1, $2, md5($3), $4, $5, $6, $7)`,
             [login, name, password, email, status, print, JSON.stringify(entry)]
@@ -40,20 +41,40 @@ export async function createUser(req, res) {
     }
 }
 
-export async function updatePassword(req, res) {
+export async function update(req, res) {
     try {
-        const { login, password } = req.body;
-
-        const banks = (
-            await db.query(
-                `UPDATE test.users
-                SET password = md5('${password}')
-                WHERE login = '${login}' RETURNING  *`
-            )
+        const { login } = req.params;
+        const { fields } = req.body;
+        const updates = fields.map(field => {
+            let [key, value] = Object.entries(field)[0]
+            return `${key} = ${value}`;
+        });
+        const user = (
+            await db.query(`
+                UPDATE ${TABLE}
+                SET ${updates.join(',')}
+                WHERE login = '${login}' RETURNING  *
+            `)
         ).rows[0];
-        res.status(200).send(banks);
+        res.status(200).send(user);
     } catch (error) {
         console.log(error);
         res.json({ message: "Не вдалося змінити пароль"})
+    }
+}
+
+export async function deleteUser(req, res) {
+    try {
+        const { login } = req.params;
+
+        const user = (
+            await db.query(`
+                DELETE FROM ${TABLE} WHERE login = '${login}' RETURNING *
+            `)
+        ).rows[0];
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+        res.json({ message: "Не вдалося змінити пароль" });
     }
 }

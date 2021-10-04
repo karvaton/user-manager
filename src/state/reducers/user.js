@@ -2,24 +2,25 @@ import * as types from "../constants/types";
 import layerReduser from './layers';
 
 export default function user(user, action) {
+    const payload = action.payload;
+
     switch (action.type) {
         case types.user.SET_LAYERS:
-            return user.login !== action.payload.login ?
+            return user.login !== payload.login ?
                 user : 
                 {
                     ...user,
-                    layers: action.payload.ids
+                    layers: payload.ids
                 }
 
         case types.user.SET:
             return {
                 ...user,
-                print: user.print === "true",
                 layerOrder: user.layers.map(({ lid }) => lid)
             }
 
         case types.layers.CHANGE_ORDER:
-            if (user.login !== action.payload.login) {
+            if (user.login !== payload.login) {
                 return user;
             } else {
                 return {
@@ -28,14 +29,13 @@ export default function user(user, action) {
                 }
             }
 
-        case types.user.PRINT:
-            if (user.login !== action.payload) {
+        case types.user.UPDATE:
+            if (user.login !== payload.login) {
                 return { ...user };
             } else {
-                const print = !user.print;
                 return {
                     ...user,
-                    print,
+                    ...payload
                 }
             }
 

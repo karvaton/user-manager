@@ -2,8 +2,7 @@ import { useState } from "react";
 import PropTypes from 'prop-types';
 import LayerList from "./LayerList";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePassword } from "../../state/actions/async/updatePassword";
-import { changePrint } from "../../state/actions/user";
+import { updateUser, removeUser } from "../../state/actions/async/user";
 
 
 function PasswordForm(props) {
@@ -17,7 +16,10 @@ function PasswordForm(props) {
 
     const submit = (e) => {
         e.preventDefault();
-        dispatch(updatePassword(props.login, password));
+        dispatch(updateUser(
+            props.login, [{ password }]
+        ));
+        setPassword('');
     }
 
     return (
@@ -75,12 +77,15 @@ function User(props) {
                     <input
                         type="checkbox"
                         checked={print}
-                        onChange={() => dispatch(changePrint(login))}
+                        onChange={() => dispatch(updateUser(login, [{print: !print}]))}
                     />
                 </p>
             </UserInfo>
             <div className="buttons">
-                <button className="delete-user">✕</button>
+                <button 
+                    className="delete-user"
+                    onClick={() => dispatch(removeUser(login))}
+                >✕</button>
             </div>
         </div>
     );
