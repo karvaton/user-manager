@@ -1,6 +1,8 @@
 import initialState from "../constants/initialState";
 import * as types from "../constants/types";
 import * as users from "./controllers/users-controller";
+import * as userAction from "../actions/user";
+import * as layerAction from "../actions/layers";
 
 
 export default function manageUsers(state = initialState.users, {type, payload}) {
@@ -12,13 +14,16 @@ export default function manageUsers(state = initialState.users, {type, payload})
             return users.set(payload);
         
         case (types.user.SET_LAYERS):
-            return users.setLayers(state, payload);
+            return users.setUser(state, payload, userAction.setLayers);
 
         case (types.layers.CHANGE_ORDER):
-            return users.changeLayerOrder(state, payload);
+            return users.setUser(state, payload, layerAction.changeOrder);
         
         case (types.user.UPDATE):
-            return users.update(state, payload);
+            return users.setUser(state, payload, userAction.update);
+
+        case (types.layer.REMOVE):
+            return users.setUser(state, payload, layerAction.removeLayer);
             
         default:
             return state;

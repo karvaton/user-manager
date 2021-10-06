@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useDispatch } from "react-redux";
 import AddLayers from "./AddLayers";
 import LayerSetting from "./LayerSetting";
 
@@ -13,39 +13,25 @@ const ModalWindow = ({ done, cancel, children }) => (
 );
 
 
-class ModalWindows extends Component {
-    constructor(props) {
-        super(props);
+function ModalWindows({window}) {
+    const dispatch = useDispatch();
+    const close = dispatch({ type: "CLOSE" });
 
-        this.state = {
-            complete: false
-        }
-        this.finish = this.finish.bind(this);
-    }
-
-    finish() {
-        this.setState( () => ({complete: true}));
-        // this.props.close();
-    }
-
-    render() {
-        const { close, window } = this.props;
-        const { complete } = this.state;
-        return (
-            <div id="modal-windows-background">
-                <ModalWindow done={this.finish} cancel={close} >
-                    {typeof window === "string" ? (
-                        <AddLayers />
-                    ) : (
-                        <LayerSetting layer={window} accept={complete} done={close} />
-                    )}
-                </ModalWindow>
-                <button id="close-modal-window" onClick={() => close()}>
-                    ✖
-                </button>
-            </div>
-        );
-    }
+    return (
+        <div id="modal-windows-background">
+            <ModalWindow cancel={() => close}>
+                {typeof window === "string" ? (
+                    <AddLayers />
+                ) : (
+                    <LayerSetting layer={window} />
+                )}
+            </ModalWindow>
+            <button id="close-modal-window" onClick={() => close()}>
+                ✖
+            </button>
+        </div>
+    );
 }
+
 
 export default ModalWindows;

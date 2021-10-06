@@ -1,11 +1,10 @@
 import { combineReducers } from "redux";
-// import manageLayers from './layers';
 import users from './users';
-// import layers from './layers';
+import modalWindow from "../reducers/modalWindow";
 
 const rootReducer = combineReducers({
     users,
-    // layers,
+    modalWindow,
 });
 
 export default rootReducer;

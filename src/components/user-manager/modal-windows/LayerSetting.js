@@ -19,7 +19,6 @@ class LayerSetting extends Component {
     }
 
     shouldComponentUpdate({accept, done}) {
-        // console.log(nextProps);
         accept && console.log(this.props.layer);
         done();
         return true;

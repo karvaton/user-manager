@@ -23,6 +23,9 @@ export default function layers(state, action) {
             layers.splice(startIndex, 2, nextLayer, prevLayer);
             return layers;
 
+        case types.layer.REMOVE:
+            return state.filter(({lid}) => lid !== action.payload.id);
+
         default:
             return state;
     }

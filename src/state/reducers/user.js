@@ -39,6 +39,16 @@ export default function user(user, action) {
                 }
             }
 
+        case types.layer.REMOVE:
+            if (user.login !== payload.login) {
+                return user;
+            } else {
+                return {
+                    ...user,
+                    layers: layerReduser(user.layers, action),
+                }
+            }
+
         default:
             return user;
     }

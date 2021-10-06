@@ -18,14 +18,8 @@ class LayerList extends Component {
         this.state = {
             layers,
         };
-        this.handlerRemoveLayer = this.handlerRemoveLayer.bind(this);
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
-    }
-
-    handlerRemoveLayer(id) {
-        const list = this.state.list.filter(({ layerId }) => layerId !== id);
-        this.setState({ list });
     }
 
     handlerReplaceLayer(currentId, direction) {
@@ -61,6 +55,7 @@ class LayerList extends Component {
                                     layers.map((layer) => (
                                         <Layer
                                             key={layer.lid}
+                                            login={this.props.login}
                                             layer={layer}
                                             removeLayer={
                                                 this.handlerRemoveLayer

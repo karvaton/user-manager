@@ -9,12 +9,7 @@ const App = ({children, auth}) => (
                 <h1>Адмін</h1>
                 <div id="content">
                     <Navbar />
-                        {/* <UserManager /> */}
-                    {
-                        //this.state.page === "users" && 
-                        //this.props.
-                        children
-                    }
+                    { children }
                 </div>
             </div>
         </div>

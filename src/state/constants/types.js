@@ -3,6 +3,7 @@ export const layer = {
     CHANGE: 'layer/change',
     REMOVE: 'layer/remove',
     SET: 'layer/set',
+    SETTING: 'layer/setting',
 }
 
 export const app = {

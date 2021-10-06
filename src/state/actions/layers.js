@@ -19,11 +19,11 @@ export function changeLayer(id, layer) {
     };
 }
 
-export function removeLayer(id) {
+export function removeLayer({login, id}) {
     return {
         type: types.layer.REMOVE,
         payload: {
-            id,
+            id, login
         },
     };
 }
@@ -44,4 +44,13 @@ export function changeOrder({login, currentId, direction}) {
             currentId,
         },
     };
+}
+
+export function layerSetting(layer) {
+    return {
+        type: types.layer.SETTING,
+        payload: {
+            ...layer
+        }
+    }
 }

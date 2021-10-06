@@ -1,6 +1,6 @@
 const initialState = {
     users: [],
-    // layers: [],
+    modalWindow: null,
     // loading: false,
 }
 
