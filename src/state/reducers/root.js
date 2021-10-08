@@ -2,9 +2,13 @@ import { combineReducers } from "redux";
 import users from './users';
 import modalWindow from "../reducers/modalWindow";
 
-const rootReducer = combineReducers({
+const userManager = combineReducers({
     users,
     modalWindow,
+});
+
+const rootReducer = combineReducers({
+    userManager,
 });
 
 export default rootReducer;

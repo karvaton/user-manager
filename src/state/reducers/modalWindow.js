@@ -2,7 +2,7 @@ import initialState from "../constants/initialState";
 import * as types from "../constants/types";
 
 export default function modalWindows(
-    state = initialState.modalWindow,
+    state = initialState.userManager.modalWindow,
     { type, payload }
 ) {
     switch (type) {

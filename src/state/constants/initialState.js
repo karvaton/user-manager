@@ -1,6 +1,8 @@
 const initialState = {
-    users: [],
-    modalWindow: null,
+    userManager: {
+        users: [],
+        modalWindow: null,
+    },
     // loading: false,
 }
 
