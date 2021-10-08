@@ -1,4 +1,5 @@
 import db from "../db.js";
+import { TABLE as DATA_TABLE } from './data-control.js';
 const TABLE = 'test.users';
 
 export async function getUsers(req, res) {
@@ -59,7 +60,7 @@ export async function update(req, res) {
         res.status(200).send(user);
     } catch (error) {
         console.log(error);
-        res.json({ message: "Не вдалося змінити пароль"})
+        res.json({ message: "Не оновити дані"})
     }
 }
 
@@ -67,14 +68,15 @@ export async function deleteUser(req, res) {
     try {
         const { login } = req.params;
 
+        await db.query(`DELETE FROM ${DATA_TABLE} WHERE login = '${login}'`)
         const user = (
-            await db.query(`
-                DELETE FROM ${TABLE} WHERE login = '${login}' RETURNING *
-            `)
+            await db.query(
+                `DELETE FROM ${TABLE} WHERE login = '${login}' RETURNING *`
+            )
         ).rows[0];
         res.status(200).send(user);
     } catch (error) {
         console.log(error);
-        res.json({ message: "Не вдалося змінити пароль" });
+        res.json({ message: "Не вдалося видалити корисутвача" });
     }
 }

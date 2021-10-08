@@ -1,11 +1,13 @@
 import db from "../db.js";
 
+export const TABLE = 'test.user_data';
+
 export async function getUserData(req, res) {
     try {
         const { login } = req.params;
         const layers = (
             await db.query(
-                `SELECT * FROM test.user_data WHERE login = '${login}'`
+                `SELECT * FROM ${TABLE} WHERE login = '${login}'`
             )
         ).rows;
         res.status(200).json(layers);
@@ -18,7 +20,7 @@ export async function getData(req, res) {
     try {
         const layers = (
             await db.query(
-                `SELECT * FROM test.user_data`
+                `SELECT * FROM ${TABLE}`
             )
         ).rows;
         res.status(200).json(layers);
@@ -35,7 +37,7 @@ export async function loadData(req, res) {
         const layerValues = layers.map(({access, id, name, style, title, workspace, parameters = '', filters = '' }, index) => 
             `('${id}','${login}', '${name}', '${workspace}', '${title}', '${access}', '${parameters}', '${filters}', '${style}', ${index})`
         ).join(",");
-        const query = `INSERT INTO test.user_data
+        const query = `INSERT INTO ${TABLE}
             (lid, login, layer_name, workspace, title, access, parameters, filters, style, order_id)
             VALUES ${layerValues}
         `;
