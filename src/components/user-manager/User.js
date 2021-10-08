@@ -64,7 +64,12 @@ UserInfo.propTypes = {
 
 
 function User(props) {
-    const { login, name, email, print } = useSelector(state => state.users.filter(user => user.login === props.login)[0]);
+    const { login, name, email, print } = useSelector(
+        (state) =>
+            state.userManager.users.filter(
+                (user) => user.login === props.login
+            )[0]
+    );
     const dispatch = useDispatch();
 
     return (

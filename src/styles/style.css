@@ -1513,9 +1513,9 @@ ul#navigation {
 	border: none;
 	padding: 2px 0;
 }
-.sublayer {
+/* .sublayer {
 	display: none;
-}
+} */
 
 span.vis, span.sel, span.edt {
 	font-size: 14pt;
@@ -2070,6 +2070,10 @@ p {
 }
 
 
+.parameters {
+	flex: 1;
+}
+
 
 #manage-buttons {
 	justify-content: flex-end;
@@ -2308,9 +2312,9 @@ input.save {
 	top: 2px;
 }
 
-ul.sublayer {
-    display: none;
-}
+/* ul.sublayer {
+    /* display: none;
+}*/
 
 #search-pane {
 	position: relative;

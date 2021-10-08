@@ -15,18 +15,21 @@ const ModalWindow = ({ done, cancel, children }) => (
 
 function ModalWindows({window}) {
     const dispatch = useDispatch();
-    const close = dispatch({ type: "CLOSE" });
+    const close = () => dispatch({ type: "CLOSE" });
 
     return (
         <div id="modal-windows-background">
-            <ModalWindow cancel={() => close}>
+            <ModalWindow cancel={() => close()}>
                 {typeof window === "string" ? (
                     <AddLayers />
                 ) : (
                     <LayerSetting layer={window} />
                 )}
             </ModalWindow>
-            <button id="close-modal-window" onClick={() => close()}>
+            <button
+                id="close-modal-window"
+                onClick={() => close()}
+            >
                 ✖
             </button>
         </div>

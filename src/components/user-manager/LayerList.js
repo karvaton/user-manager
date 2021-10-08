@@ -90,7 +90,7 @@ class LayerList extends Component {
 }
 
 const mapStateToProps = (store, state) => {
-    const { layers } = store.users.filter(({login}) => login === state.login)[0];
+    const { layers } = store.userManager.users.filter(({login}) => login === state.login)[0];
     return { layers };
 };
 

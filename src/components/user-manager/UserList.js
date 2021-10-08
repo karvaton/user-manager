@@ -12,6 +12,7 @@ class UserList extends Component {
 
     render() {
         const { users } = this.props;
+
         return <div id="wrapper">
             {users.map(({id, login}) => 
                 <User
@@ -23,18 +24,15 @@ class UserList extends Component {
     }
 }
 
-const mapStateToProps = store => {
-    const {users, layers, } = store;
-    return {users, layers, };
-}
+const mapStateToProps = store => ({
+    users: store.userManager.users,
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        setUsers: (users) => dispatch(setUsers(users)),
-        getUsers: () => dispatch(fetchUsers()),
-        // getLayers: () => dispatch(fetchLayers()),
-        setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
-    };
-}
+const mapDispatchToProps = dispatch => ({
+    setUsers: (users) => dispatch(setUsers(users)),
+    getUsers: () => dispatch(fetchUsers()),
+    // getLayers: () => dispatch(fetchLayers()),
+    setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserList);

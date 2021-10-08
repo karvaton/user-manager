@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 
 function UserManager() {
-    const modalWindow = useSelector(state => state.modalWindow);
+    const modalWindow = useSelector(state => state.userManager.modalWindow);
 
     return [
         <UserList key="user-list" />,

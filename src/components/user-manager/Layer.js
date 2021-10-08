@@ -6,11 +6,11 @@ import { layerSetting, removeLayer } from "../../state/actions/layers";
 
 function LayerRow({id, replaceLayer, login}) {
     const dispatch = useDispatch();
-    const users = useSelector(state => state.users);
+    const users = useSelector(state => state.userManager.users);
     const user = users.filter(user => user.login === login)[0];
     const layers = user.layers;
-    const layer = layers.filter(layer => layer.lid = id)[0];
-    const {workspace, name, title, access} = layer;
+    const layer = layers.filter(layer => layer.lid === id)[0];
+    const { workspace, name, title, access } = layer;
 
     return (
         <tr className={`layer-line ${access}-layer`}>
