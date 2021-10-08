@@ -146,7 +146,7 @@ class UserForm extends Component {
     input(e) {
         e.preventDefault();
         const { name, value } = e.target;
-        this.setState(() => ({
+        this.setState(() => ({ 
             [name]: value,
         }));
     }
@@ -176,6 +176,7 @@ class UserForm extends Component {
 
             if (dbname) {
                 let res = await this.getLayerList(this.state.workspace, dbname);
+
                 let entry = await this.getDBparams(
                     this.state.workspace,
                     dbname
@@ -307,9 +308,9 @@ class UserForm extends Component {
         const json2 = await res2.json();
         const layer = json1.layer;
         const feature = json2.featureType;
+
         if (!(layer && feature)) return;
         let { defaultStyle, styles } = layer;
-        console.log(layer);
 
         if (styles) {
             styles = styles.style
@@ -357,7 +358,6 @@ class UserForm extends Component {
             loading,
             print,
         } = this.state;
-        // console.log(print);
 
         return (
             <div id="form" style={styles.form}>
@@ -450,6 +450,7 @@ class UserForm extends Component {
                         availableList.map(
                             ({ name, title, id, styles, sublayers }) => (
                                 <Layer
+                                    key={id}
                                     id={id}
                                     name={name}
                                     title={title}

@@ -5,8 +5,8 @@ const style = {
     aciTreePush: {
         marginRight: '5px'
     },
-    styleItem: {
-        display: 'flex',
+    sublayers: {
+        display: 'none',
         justifyContent: 'space-between'
     }
 };
@@ -29,13 +29,22 @@ class Layer extends Component {
         this.state = {
             access: null,
             style: '',
+            display: 'none'
         }
         this.toggleLayer = this.toggleLayer.bind(this);
     }
 
+    toggleSublayers() {
+        let { display } = this.state;
+        display === "block"
+            ? (display = "none")
+            : (display = "block");
+        this.setState({display});
+    }
+
     toggleLayer(e) {
         const { id, name, title, } = this.props;
-        let { style, access } = this.state;
+        let { style, access, } = this.state;
         
         if (e.target.name !== access) {
             access = e.target.name;
@@ -51,12 +60,16 @@ class Layer extends Component {
 
     render() {
         const { id, name, sublayers, styles } = this.props;
-        const { access, } = this.state;
+        const { access, display } = this.state;
         return (
             <div id={id} className="option">
                 <div>
                     {(sublayers || styles) && (
-                        <span className="aciTreePush" style={style.aciTreePush}>
+                        <span
+                            className="aciTreePush"
+                            style={style.aciTreePush}
+                            onClick={() => this.toggleSublayers()}
+                        >
                             &gt;
                         </span>
                     )}
@@ -90,7 +103,7 @@ class Layer extends Component {
                     </div>
                 </div>
                 {sublayers && (
-                    <ul className="sublayer">
+                    <ul className="sublayer" style={{display}}>
                         {sublayers.map((item, index) => (
                             <li key={index}>{item}</li>
                         ))}
@@ -99,7 +112,7 @@ class Layer extends Component {
                 {styles && (
                     <ul className="styles">
                         {styles.map(({ name, isDefault }, index) => (
-                            <li key={index} style={style.styleItem}>
+                            <li key={index} style={{...style.sublayers, display}}>
                                 {isDefault ? (
                                     <b title="за замовчуванням">{name}</b>
                                 ) : (
