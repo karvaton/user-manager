@@ -1,6 +1,6 @@
 import Router from "express";
 import * as userControl from "../controller/user-control.js";
-import * as dataControl from "../controller/data-control.js";
+import * as dataControl from "../controller/layers-control.js";
 
 const router = new Router();
 

@@ -815,8 +815,8 @@ li.ordered, li.ordered:hover {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	cursor: progress;
 }
+
 progress {
 	margin: -1px 10px;
 	height: 20px;
@@ -1997,6 +1997,7 @@ p {
 	height: calc(100% - 50px);
 }
 #layer-settings > div,
+#layer-settings > select,
 #layer-settings > input {
 	border-radius: 5px;
 	padding: 4px;
