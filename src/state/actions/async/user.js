@@ -2,6 +2,7 @@ import { setUsers } from "../users";
 import { deleteUser, update } from "../user";
 import { setLayers } from "../layers";
 
+
 export function fetchLayers() {
     return (dispatch) => {
         fetch(`http://localhost:5000/layers`)
@@ -9,7 +10,6 @@ export function fetchLayers() {
             .then((users) => dispatch(setLayers(users)));
     };
 }
-
 
 export function fetchUsers() {
     return async (dispatch) => {

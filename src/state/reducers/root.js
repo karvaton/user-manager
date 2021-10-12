@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import users from './users';
-import modalWindow from "../reducers/modalWindow";
+import modalWindow from "./modalWindow";
+import registrationReducer from "./registration";
 
 const userManager = combineReducers({
     users,
@@ -9,6 +10,7 @@ const userManager = combineReducers({
 
 const rootReducer = combineReducers({
     userManager,
+    registration: registrationReducer,
 });
 
 export default rootReducer;

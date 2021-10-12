@@ -1,15 +1,18 @@
 import PropTypes from "prop-types";
 import { Component } from "react";
 
+
 const style = {
     aciTreePush: {
-        marginRight: '5px'
+        marginRight: '5px',
+        transition: '.1s'
     },
     sublayers: {
         display: 'none',
         justifyContent: 'space-between'
     }
 };
+
 
 class Layer extends Component {
     static propTypes = {
@@ -29,16 +32,13 @@ class Layer extends Component {
         this.state = {
             access: null,
             style: '',
-            display: 'none'
+            display: false
         }
         this.toggleLayer = this.toggleLayer.bind(this);
     }
 
     toggleSublayers() {
-        let { display } = this.state;
-        display === "block"
-            ? (display = "none")
-            : (display = "block");
+        let display = !this.state.display;
         this.setState({display});
     }
 
@@ -58,6 +58,11 @@ class Layer extends Component {
         this.setState({access});
     }
 
+    setLayer() {
+        const { access } = this.props;
+        console.log(access);
+    }
+
     render() {
         const { id, name, sublayers, styles } = this.props;
         const { access, display } = this.state;
@@ -67,7 +72,10 @@ class Layer extends Component {
                     {(sublayers || styles) && (
                         <span
                             className="aciTreePush"
-                            style={style.aciTreePush}
+                            style={{
+                                ...style.aciTreePush,
+                                transform: display ? 'rotate(90deg)' : ''
+                            }}
                             onClick={() => this.toggleSublayers()}
                         >
                             &gt;
@@ -103,7 +111,13 @@ class Layer extends Component {
                     </div>
                 </div>
                 {sublayers && (
-                    <ul className="sublayer" style={{display}}>
+                    <ul
+                        className="sublayer"
+                        style={{
+                            ...style.sublayers,
+                            display: display ? "block" : "none",
+                        }}
+                    >
                         {sublayers.map((item, index) => (
                             <li key={index}>{item}</li>
                         ))}
@@ -112,7 +126,13 @@ class Layer extends Component {
                 {styles && (
                     <ul className="styles">
                         {styles.map(({ name, isDefault }, index) => (
-                            <li key={index} style={{...style.sublayers, display}}>
+                            <li
+                                key={index}
+                                style={{
+                                    ...style.sublayers,
+                                    display: display ? "block" : "none",
+                                }}
+                            >
                                 {isDefault ? (
                                     <b title="за замовчуванням">{name}</b>
                                 ) : (
@@ -133,5 +153,6 @@ class Layer extends Component {
         );
     }
 }
+
 
 export default Layer;

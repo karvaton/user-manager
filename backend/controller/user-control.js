@@ -1,6 +1,6 @@
 import db from "../db.js";
 import { TABLE as DATA_TABLE } from './layers-control.js';
-const TABLE = 'test.users';
+export const TABLE = 'test.users';
 
 export async function getUsers(req, res) {
     try {

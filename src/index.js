@@ -5,7 +5,7 @@ import './index.css';
 
 import App from './App';
 import UserManager from './components/user-manager/user-page';
-import UserForm from './components/registr/registration';
+import Registration from './components/registr/registration';
 import Edits from './components/edits-manager/Edits';
 import Login from './components/admin-auth/Login';
 import { history, navigate } from './history/history';
@@ -27,7 +27,7 @@ export const renderApp = (state, callback = () => {}) => {
                 <Router {...state}>
                     <Route path="" component={App}>
                         <Route path="/admin-auth" component={Login} />
-                        <Route path="/register-user" component={UserForm} />
+                        <Route path="/register-user" component={Registration} />
                         <Route path="/user-manager" component={UserManager} />
                         <Route path="/edits-manager" component={Edits} />
                     </Route>

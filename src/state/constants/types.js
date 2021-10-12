@@ -20,3 +20,13 @@ export const user = {
 export const layers = {
     CHANGE_ORDER: "layers/change_order",
 };
+
+export const registration = {
+    GET_PARAMS: 'registration/getParameters',
+    GET_LAYERS: 'registration/getLayers',
+    CLEAR_LAYERS: 'registration/clearLayers',
+    SET_ACTIVE_LAYER: 'registration/set_active',
+    RESET_ACTIVE_LAYER: 'registration/reset_active',
+    START_LOADING: 'registration/startLoading',
+    FINISH_LOADING: 'registration/finishLoading',
+}

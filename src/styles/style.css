@@ -509,7 +509,7 @@ label:first-of-type {
 	padding: 3px 4px;
 	/*display: block;*/
 	font-size: 11pt;
-	width: 291px;
+	width: 301px;
 	/*align-items: center;*/
 	flex-direction: column;
 }
@@ -561,10 +561,11 @@ div.form-content {
 	padding-bottom: 2px;
 	padding-right: 5px;
 	height: 300px;
-	overflow: auto;
 	border-top: none;
 	border-radius: 0 0 5px 5px;
 	width: 303px;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 /*div.form-content:hover {padding-right: 0;}*/
 
