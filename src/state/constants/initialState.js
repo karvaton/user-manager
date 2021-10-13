@@ -6,10 +6,7 @@ const initialState = {
     registration: {
         layers: [],
         loading: false,
-        activeLayer: {
-            name: 30310210,
-            id: "l30310210",
-        },
+        activeLayer: null,
         entry: {
             schema: "public",
             database: "bazis",

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { fetchParams } from "../../state/actions/async/registration";
-import { startLoading } from "../../state/actions/registration";
+// import { startLoading } from "../../state/actions/registration";
 import Loading from "../common/Loading";
 
 const styles = {
@@ -15,18 +15,16 @@ const styles = {
 
 function LayerManager() {
     const dispatch = useDispatch();
-    const loading = useSelector((state) => state.registration.loading);
-    const layer = useSelector((state) => state.registration.activeLayer);
-    const parameters = useSelector((state) => state.registration.parameters) || [];
-    let { id, name, title, sublayers, params } = layer;
+    const state = useSelector((state) => state.registration);
+    const { loading, layers, activeLayer, entry } = state;
+    const layer = layers.filter(({id}) => id === activeLayer)[0];
+    const { id, name, title, sublayers, parameters } = layer
     const type = sublayers ? "layergroup" : "layer";
-    params = parameters.map((param) => ({ name: param, title: param, checked: false }));
-
-    const entry = useSelector((state) => state.registration.entry);
-    if (!parameters.length) {
-        dispatch(startLoading("parameters"));
+    const params = parameters.map(param => ({ ...param }));
+    
+    if (!params.length) {
+        // dispatch(startLoading("parameters"));
         dispatch(fetchParams(id, entry));
-        // params =  [...parameters] || [];
     }
 
     return (
@@ -39,8 +37,7 @@ function LayerManager() {
                         </i>
                     ) : (
                         <i>{title || name}</i>
-                    )}
-                    — {type}
+                    )} — {type}
                 </p>
                 <div id="info-title">
                     <p>Назва параметра</p>

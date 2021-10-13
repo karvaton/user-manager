@@ -11,18 +11,23 @@ export const getLayers = (payload) => ({
     payload,
 });
 
-export function fetchParams(table, entry) {
+export function fetchParams(layer, entry) {
     return (dispatch) => {
-        post.json(
-            `http://localhost:5000/data/parameters?table=${table}`,
-            entry
-        ).then(res => res.json())
-        .then(json => {
-            dispatch({
-                type: types.registration.FINISH_LOADING,
+        post.json(`http://localhost:5000/data/parameters?table=${layer}`, entry)
+            .then((res) => res.json())
+            .then((params) =>
+                params.map((param) => ({
+                    name: param,
+                    title: param,
+                    checked: false,
+                }))
+            )
+            .then((data) => {
+                dispatch({
+                    type: types.registration.FINISH_LOADING,
+                });
+                dispatch(getParams({ data, layer }));
             });
-            dispatch(getParams(json));
-        });
     };
 }
 
@@ -84,8 +89,9 @@ async function fetchLayers(ws, ds) {
         `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes`
     );
     let json = await res.json();
-    let layers = json?.featureTypes?.featureType?.map(async ({ name }) => {
-        let info = {}; // await this.getLayerData(ws, ds, name);
+    let layers = json?.featureTypes?.featureType?.map(async (layer) => {
+        let name = layer.name;
+        let info = {}//await getLayerData(ws, ds, name);
         let id = "l" + name;
         return info ? { name, id, ...info } : { name, id };
     });
@@ -100,36 +106,38 @@ async function fetchLayers(ws, ds) {
 }
 
 export async function getLayerData(ws, ds, layerId) {
-    const res1 = await fetch(
-        `http://localhost:5000/geoserver/workspaces/${ws}/layers/${layerId}`
-    );
-    const res2 = await fetch(
-        `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes/${layerId}`
-    );
-    const json1 = await res1.json();
-    const json2 = await res2.json();
-    const layer = json1.layer;
-    const feature = json2.featureType;
+    try {
+        const res1 = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/layers/${layerId}`
+        );
+        // const res2 = await fetch(
+        //     `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes/${layerId}`
+        // );
+        const json1 = await res1.json();
+        // const json2 = await res2.json();
+        const layer = json1.layer;
+        // const feature = json2.featureType;
+        let { defaultStyle, styles } = layer;
 
-    if (!(layer && feature)) return;
-    let { defaultStyle, styles } = layer;
-
-    if (styles) {
-        styles = styles.style
-            .filter((item) => item !== "null")
-            .map(({ name }) => ({ name }));
-        styles.unshift({
-            name: defaultStyle.name,
-            isDefault: true,
-        });
+        if (styles) {
+            styles = styles.style
+                .filter((item) => item !== "null")
+                .map(({ name }) => ({ name }));
+            styles.unshift({
+                name: defaultStyle.name,
+                isDefault: true,
+            });
+        }
+        // let { title, srs, latLonBoundingBox } = feature;
+        return {
+            // title,
+            styles,
+            // srs,
+            // bbox: latLonBoundingBox,
+        };    
+    } catch (error) {
+        return;
     }
-    let { title, srs, latLonBoundingBox } = feature;
-    return {
-        title,
-        styles,
-        srs,
-        bbox: latLonBoundingBox,
-    };
 }
 
 

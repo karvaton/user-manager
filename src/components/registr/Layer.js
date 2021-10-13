@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 import { Component } from "react";
+import { connect } from "react-redux";
+import { activateLayer, deactivateLayer } from "../../state/actions/registration";
 
 
 const style = {
@@ -31,10 +33,11 @@ class Layer extends Component {
 
         this.state = {
             access: null,
-            style: '',
+            style: props.styles,
             display: false
         }
         this.toggleLayer = this.toggleLayer.bind(this);
+        this.setLayer = this.setLayer.bind(this);
     }
 
     toggleSublayers() {
@@ -56,18 +59,23 @@ class Layer extends Component {
             this.props.removeLayer(id);
         }
         this.setState({access});
+        this.setLayer(access);
     }
 
-    setLayer() {
-        const { access } = this.props;
-        console.log(access);
+    setLayer(access) {
+        if (access === "selectable" || access === "editable") {
+            const { id } = this.props;
+            this.props.activate(id);
+        } else {
+            this.props.deactivate();
+        }
     }
 
     render() {
         const { id, name, sublayers, styles } = this.props;
         const { access, display } = this.state;
         return (
-            <div id={id} className="option">
+            <div id={id} className="option" onClick={() => this.setLayer(access)}>
                 <div>
                     {(sublayers || styles) && (
                         <span
@@ -154,5 +162,9 @@ class Layer extends Component {
     }
 }
 
+const mapDispatchToProps = (dispatch) => ({
+    activate: (layer) => dispatch(activateLayer(layer)),
+    deactivate: () => dispatch(deactivateLayer()),
+});
 
-export default Layer;
+export default connect(null, mapDispatchToProps)(Layer);

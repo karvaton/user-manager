@@ -1,45 +1,56 @@
 import initialState from '../constants/initialState';
-import * as types from '../constants/types';
+import { registration } from '../constants/types';
+import setParams from './paramsReducer';
 
 const registrationReducer = (state = initialState.registration, {type, payload}) => {
     switch (type) {
-        case types.registration.GET_PARAMS:
+        case registration.GET_PARAMS:
             return {
                 ...state,
-                parameters: payload
+                layers: state.layers.map((layer) =>
+                    setParams(layer, { type, payload })
+                ),
             };
 
-        case types.registration.GET_LAYERS:
+        case registration.CHANGE_PARAMS:
             return {
                 ...state,
-                layers: payload,
+                layers: state.layers.map((layer) =>
+                    setParams(layer, { type, payload })
+                ),
+            };
+
+        case registration.GET_LAYERS:
+            return {
+                ...state,
+                layers: payload.map(layer => setParams(layer, {type})),
             }
 
-        case types.registration.CLEAR_LAYERS:
+        case registration.CLEAR_LAYERS:
             return {
                 ...state,
                 layers: [],
             }
 
-        case types.registration.SET_ACTIVE_LAYER:
+        case registration.SET_ACTIVE_LAYER:
             return {
                 ...state,
                 activeLayer: payload,
             }
 
-        case types.registration.RESET_ACTIVE_LAYER:
+        case registration.RESET_ACTIVE_LAYER:
             return {
                 ...state,
                 activeLayer: null,
             }
             
-        case types.registration.START_LOADING:
+        case registration.START_LOADING:
             return {
                 ...state,
                 loading: payload
             }
         
-        case types.registration.FINISH_LOADING:
+        case registration.FINISH_LOADING:
             return {
                 ...state,
                 loading: false

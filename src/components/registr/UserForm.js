@@ -240,7 +240,7 @@ class UserForm extends Component {
             workspace,
             dbases,
             dbname,
-            entry: { password },
+            // entry: { password },
             print,
         } = this.state;
         const { loading } = this.props;
@@ -290,7 +290,7 @@ class UserForm extends Component {
                     ))}
                 </select>
 
-                {dbname && (
+                {/* dbname && (
                     <FormField
                         id="dbpass"
                         text="Пароль бази даних"
@@ -299,7 +299,7 @@ class UserForm extends Component {
                         func={this.input}
                         value={password}
                     />
-                )}
+                ) */}
 
                 <label htmlFor="available">Доступні шари</label>
 
@@ -334,7 +334,7 @@ class UserForm extends Component {
                         <Loading style={styles.loader} />
                     ) : availableList.length ? (
                         availableList.map(
-                            ({ name, title, id, styles, sublayers }) => (
+                            ({ name, title, id, styles, sublayers, parameters = []}) => (
                                 <Layer
                                     key={id}
                                     id={id}
@@ -342,6 +342,7 @@ class UserForm extends Component {
                                     title={title}
                                     styles={styles}
                                     sublayers={sublayers}
+                                    parameters={parameters}
                                     addLayer={this.addLayerHandler}
                                     removeLayer={this.removeLayerHandler}
                                 />
