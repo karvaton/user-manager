@@ -25,6 +25,7 @@ export const registration = {
     GET_PARAMS: 'registration/getParameters',
     CHANGE_PARAMS: 'registration/changeParameters',
     GET_LAYERS: 'registration/getLayers',
+    CHANGE_LAYER: 'registration/changeLayer',
     CLEAR_LAYERS: 'registration/clearLayers',
     SET_ACTIVE_LAYER: 'registration/set_active',
     RESET_ACTIVE_LAYER: 'registration/reset_active',

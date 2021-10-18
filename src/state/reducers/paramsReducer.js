@@ -20,19 +20,33 @@ const setParameters = (state, {type, payload}) => {
             }
 
         case registration.CHANGE_PARAMS:
-            parameters = state.parameters.map(parameter => {
-                if (parameter.name === payload.name) {
-                    return {
-                        ...parameter,
-                        [payload.key]: payload.value,
+            if (payload.id === state.id) {
+                parameters = state.parameters.map(parameter => {
+                    if (parameter.name === payload.name) {
+                        return {
+                            ...parameter,
+                            [payload.key]: payload.value,
+                        }
+                    } else {
+                        return parameter;
                     }
-                } else {
-                    return parameter;
+                });
+                return {
+                    ...state,
+                    parameters,
                 }
-            })
-            
-            return {
+            } else {
+                return state;
+            }
 
+        case registration.CHANGE_LAYER:
+            if (payload.layer === state.id) {
+                return {
+                    ...state,
+                    ...payload
+                };
+            } else {
+                return state;
             }
     
         default:

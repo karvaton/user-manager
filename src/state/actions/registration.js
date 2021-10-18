@@ -18,7 +18,14 @@ export const deactivateLayer = () => ({
     type: registration.RESET_ACTIVE_LAYER,
 });
 
-export const changeParameter = (payload) => ({
+export const changeParameter = (id, parameters) => ({
     type: registration.CHANGE_PARAMS,
-    payload,
+    payload: {
+        ...parameters, id
+    },
 });
+
+export const changeLayer = (payload) => ({
+    type: registration.CHANGE_LAYER,
+    payload,
+})

@@ -1540,58 +1540,7 @@ span.vis, span.sel, span.edt {
 	flex: .8;
 }
 
-#manager-title {
-    border-bottom: solid 2px #9399a5;
-    padding: 1% 2% 0;
-    font-size: 11pt;
-    display: inline-block;
-}
-#manager-title strong {font-size: 12pt;}
 
-.layer-info {
-	flex: 1;
-	flex-direction: column;
-	font: bold 11pt sans-serif;
-	font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
-}
-#info-title p {
-	flex: 1;
-	font-size: 10pt;
-	color: #a2a2a2;
-	font-weight: 600;
-	text-align: center;
-	height: 1.15rem;
-}
-#info-title :last-child {
-	flex: 0;
-	font-size: 14pt;
-	color: #5a5a5a;
-	font-weight: 400;
-	cursor: pointer;
-	margin-right: 1%;
-}
-
-.parameter {
-	height: 2rem;
-	align-items: center;
-	padding: 0 1% 0 2%
-}
-.parameter:hover {
-	background-color: aliceblue;
-}
-.parameter input {
-	border: solid 1px gray;
-	border-radius: 7px;
-}
-
-.paramName {flex: 1;}
-input.paramName {padding: 4px 8px;}
-.paramView {margin: 4px 2px;}
-.param-btn {
-	margin-left: 4px;
-	padding: 4px;
-}
-.cancel-param {margin-right: 3px;}
 
 div#available::-webkit-scrollbar {width: 0px; height: 3px}
 
@@ -1635,6 +1584,23 @@ button {
 	border-radius: 4px;
 	background-color: #6b8bc5;
 	color: #fff;
+}
+
+.dialog-buttons button {
+	margin-left: 6px;
+	padding: 5px;
+	border: none;
+	/* border-radius: 4px; */
+	background-color: #6b8bc5;
+	color: #fff;
+	font-size: 13px;
+}
+.dialog-buttons .cancel-btn {
+	background-color: #bfc3ca;
+}
+.dialog-buttons button:disabled {
+	background-color: #acb4c7;
+	color: #e0e0e0;
 }
 
 
@@ -2343,9 +2309,9 @@ input.save {
 
 
 /*управління параметрами шарів*/
+#manager-name,
 #manager-title {
-    border-bottom: solid 2px #9399a5;
-    padding: 1% 2% 0;
+    padding: 0 1%;
     font-size: 11pt;
     display: inline-block;
 }
@@ -2357,6 +2323,12 @@ input.save {
 	font: bold 11pt sans-serif;
 	font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
+
+#info-title {
+    border-top: solid 2px #9399a5;
+	margin-top: 1px;
+}
+
 #info-title p {
 	flex: 1;
 	font-size: 10pt;
