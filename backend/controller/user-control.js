@@ -2,6 +2,8 @@ import db from "../db.js";
 import { TABLE as DATA_TABLE } from './layers-control.js';
 export const TABLE = 'test.users';
 
+const ip = process.env.PGHOST;
+
 export async function getUsers(req, res) {
     try {
         const users = (
@@ -29,13 +31,16 @@ export async function getUser(req, res) {
 export async function createUser(req, res) {
     try {
         const { login, name, password, email, status, print, entry } = req.body;
+        if (entry.host === 'localhost') {
+            entry.host = ip;
+        }
         await db.query(
             `INSERT INTO ${TABLE} 
             (login, name, password, email, status, print, db_conn)
             VALUES ($1, $2, md5($3), $4, $5, $6, $7)`,
             [login, name, password, email, status, print, JSON.stringify(entry)]
         );
-        res.status(200).json({message: "Користувача створено"});
+        res.status(200).json({ message: "Користувача створено" });
     } catch (error) {
         console.log(error);
         res.json({ message: "Не вдалося створити користувача" });

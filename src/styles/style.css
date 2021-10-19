@@ -1599,8 +1599,8 @@ button {
 	background-color: #bfc3ca;
 }
 .dialog-buttons button:disabled {
-	background-color: #acb4c7;
-	color: #e0e0e0;
+	background-color: #6c8cc659;
+	color: #fff9;
 }
 
 
@@ -2310,6 +2310,7 @@ input.save {
 
 /*управління параметрами шарів*/
 #manager-name,
+#layer-type,
 #manager-title {
     padding: 0 1%;
     font-size: 11pt;

@@ -9,9 +9,11 @@ export const clearLayers = () => ({
     type: registration.CLEAR_LAYERS,
 });
 
-export const activateLayer = (payload) => ({
+export const activateLayer = (id, editing = false) => ({
     type: registration.SET_ACTIVE_LAYER,
-    payload,
+    payload: {
+        id, editing
+    },
 });
 
 export const deactivateLayer = () => ({
@@ -27,5 +29,10 @@ export const changeParameter = (id, parameters) => ({
 
 export const changeLayer = (payload) => ({
     type: registration.CHANGE_LAYER,
+    payload,
+});
+
+export const setEntry = (payload) => ({
+    type: registration.SET_ENTRY,
     payload,
 })

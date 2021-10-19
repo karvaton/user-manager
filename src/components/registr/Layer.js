@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Component } from "react";
 import { connect } from "react-redux";
-import { activateLayer, deactivateLayer } from "../../state/actions/registration";
+import { activateLayer, changeLayer, deactivateLayer } from "../../state/actions/registration";
 
 
 const style = {
@@ -19,10 +19,7 @@ const style = {
 class Layer extends Component {
     static propTypes = {
         id: PropTypes.string.isRequired,
-        name: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.number,
-        ]).isRequired,
+        name: PropTypes.string.isRequired,
         title: PropTypes.string,
         style: PropTypes.arrayOf(PropTypes.object),
         sublayers: PropTypes.array,
@@ -32,7 +29,6 @@ class Layer extends Component {
         super(props);
 
         this.state = {
-            access: null,
             style: props.styles,
             display: false
         }
@@ -46,34 +42,43 @@ class Layer extends Component {
     }
 
     toggleLayer(e) {
-        const { id, name, title, } = this.props;
-        let { style, access, } = this.state;
-        
+        const { id } = this.props;
+        let { access } = this.props;
+
         if (e.target.name !== access) {
             access = e.target.name;
-            this.props.addLayer({
-                id, name, title, style, access
-            });
         } else {
             access = null;
-            this.props.removeLayer(id);
         }
-        this.setState({access});
+        this.props.changeLayer({id, access});
+        // this.setState({access});
         this.setLayer(access);
     }
 
     setLayer(access) {
         if (access === "selectable" || access === "editable") {
+            let { activeLayer } = this.props;
             const { id } = this.props;
-            this.props.activate(id);
+            if (!activeLayer?.editing) {
+                this.props.activate(id);
+            } else {
+                alert(`Зaвершіть редагування шару ${activeLayer.id}`);
+            }
         } else {
             this.props.deactivate();
         }
     }
 
+    shouldComponentUpdate({access}) {
+        if (this.props.access === access) {
+            return false;
+        }
+        return true;
+    }
+
     render() {
-        const { id, name, sublayers, styles } = this.props;
-        const { access, display } = this.state;
+        const { id, name, sublayers, styles, access } = this.props;
+        const { display } = this.state;
         return (
             <div id={id} className="option" onClick={() => this.setLayer(access)}>
                 <div>
@@ -162,9 +167,18 @@ class Layer extends Component {
     }
 }
 
+const mapStateToProps = (state, {id}) => {
+    const layer = state.registration.layers.filter(layer => layer.id === id)[0];
+    return {
+        ...layer,
+        activeLayer: state.registration.activeLayer,
+    }
+};
+
 const mapDispatchToProps = (dispatch) => ({
     activate: (layer) => dispatch(activateLayer(layer)),
     deactivate: () => dispatch(deactivateLayer()),
+    changeLayer: (layer) => dispatch(changeLayer(layer)),
 });
 
-export default connect(null, mapDispatchToProps)(Layer);
+export default connect(mapStateToProps, mapDispatchToProps)(Layer);

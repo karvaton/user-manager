@@ -5,7 +5,7 @@ import Layer from "./Layer";
 import { post } from "../../tools/ajax";
 import { connect } from "react-redux";
 import { fetchLayerList } from "../../state/actions/async/registration";
-import { clearLayers, startLoading } from "../../state/actions/registration";
+import { clearLayers, setEntry, startLoading } from "../../state/actions/registration";
 
 const styles = {
     form: {
@@ -105,12 +105,22 @@ class UserForm extends Component {
             email,
             login,
             password,
-            layers = [],
             print,
-            entry,
             status = null,
         } = this.state;
-        const user = { name, email, login, password, print, entry, status };
+        let {
+            layers = [],
+            entry,
+        } = this.props;
+        layers = layers.filter(({access}) => !!access).map(layer => ({
+                ...layer,
+                parameters: layer.parameters
+                    .filter(({ checked }) => checked)
+                    .map(({ name, title }) => ({ name, title })
+                ),
+            })
+        );
+        const user = { name, email, login, password, layers, print, entry, status };
         let userPost = await post.json("http://localhost:5000/users/", user);
         let layersPost = await post.json(
             "http://localhost:5000/layers/" + login,
@@ -158,19 +168,19 @@ class UserForm extends Component {
             let workspace = workspaceList[value - 1] || "";
             this.setState(() => ({ workspace }));
             this.getDBases(workspace);
+        
         } else if (name === "datastore") {
             let dbname = dbases[value - 1] || "";
             this.setState(() => ({ dbname }));
 
             if (dbname) {
                 this.props.startLoading('layers');
-                this.props.getLayers(this.state.workspace, dbname);
-
+                this.props.getLayers(this.state.workspace, dbname); 
                 let entry = await this.getDBparams(
                     this.state.workspace,
                     dbname
                 );
-                this.setState({ entry });
+                this.props.setEntry(entry);
             } else {
                 this.props.clearLayers();
                 this.setState(() => ({
@@ -240,7 +250,6 @@ class UserForm extends Component {
             workspace,
             dbases,
             dbname,
-            // entry: { password },
             print,
         } = this.state;
         const { loading } = this.props;
@@ -338,13 +347,13 @@ class UserForm extends Component {
                                 <Layer
                                     key={id}
                                     id={id}
-                                    name={name}
-                                    title={title}
-                                    styles={styles}
-                                    sublayers={sublayers}
-                                    parameters={parameters}
-                                    addLayer={this.addLayerHandler}
-                                    removeLayer={this.removeLayerHandler}
+                                    // name={name}
+                                    // title={title}
+                                    // styles={styles}
+                                    // sublayers={sublayers}
+                                    // parameters={parameters}
+                                    // addLayer={this.addLayerHandler}
+                                    // removeLayer={this.removeLayerHandler}
                                 />
                             )
                         )
@@ -354,7 +363,7 @@ class UserForm extends Component {
                         </p>
                     )}
                 </div>
-
+                
                 <div>
                     <label htmlFor="print">
                         <input
@@ -392,6 +401,7 @@ const mapDispatchToProps = (dispatch) => ({
     getLayers: (ws, ds) => dispatch(fetchLayerList(ws, ds)),
     startLoading: (target) => dispatch(startLoading(target)),
     clearLayers: () => dispatch(clearLayers()),
+    setEntry: (entry) => dispatch(setEntry(entry)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

@@ -6,6 +6,9 @@ const setParameters = (state, {type, payload}) => {
         case registration.GET_LAYERS:
             return {
                 ...state,
+                name: state.name.toString(),
+                title: '',
+                access: null,
                 parameters,
             }
             
@@ -40,7 +43,7 @@ const setParameters = (state, {type, payload}) => {
             }
 
         case registration.CHANGE_LAYER:
-            if (payload.layer === state.id) {
+            if (payload.id === state.id) {
                 return {
                     ...state,
                     ...payload

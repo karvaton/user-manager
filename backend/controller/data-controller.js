@@ -2,13 +2,14 @@ import pg from "pg";
 import db from "../db.js";
 import { TABLE } from "./user-control.js";
 
-let connection = {
+const connection = {
     schema: "public",
     database: "bazis",
     host: "45.94.158.117",
     port: "5432",
     user: "postgres",
 };
+const ip = process.env.PGHOST;
 
 async function getUser(login) {
     try {
@@ -37,6 +38,9 @@ export async function getParameters(req, res) {
         const connection =
             req.method === "POST" ? req.body : await getUser(login);
             
+        if (connection.host === 'localhost') {
+            connection.host = ip;
+        }
         const pool = new pg.Pool(connection);
         const parameters = (await pool.query(
             `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table}'`

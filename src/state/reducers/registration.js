@@ -63,6 +63,12 @@ const registrationReducer = (state = initialState.registration, {type, payload})
                 ...state,
                 loading: false
             }
+
+        case registration.SET_ENTRY:
+            return {
+                ...state,
+                entry: payload
+            }
     
         default:
             return state;

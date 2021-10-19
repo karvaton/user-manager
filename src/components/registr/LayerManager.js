@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchParams } from "../../state/actions/async/registration";
 // import { startLoading } from "../../state/actions/registration";
-import { changeLayer, changeParameter } from "../../state/actions/registration";
+import { activateLayer, changeLayer, changeParameter } from "../../state/actions/registration";
 import Loading from "../common/Loading";
 import Parameter from "./Parameter";
 
@@ -20,13 +20,24 @@ const styles = {
     },
     title: {
         flex: 1,
+        padding: "0 4px",
     },
     edit: {
-        display: 'inline',
+        display: "inline",
         margin: 0,
         backgroundColor: "#fff0",
         color: "#6b8bc5",
-        transform: 'rotate(180deg)',
+        transform: "rotate(180deg)",
+    },
+    center: {
+        textAlign: "center",
+    },
+    titleInput: {
+        border: "none",
+        backgroundColor: "#edeef1",
+        marginBottom: '3px',
+        padding: '2px 4px',
+        fontSize: '11pt',
     },
 };
 
@@ -34,29 +45,27 @@ function LayerManager() {
     const dispatch = useDispatch();
     const state = useSelector((state) => state.registration);
     const { loading, layers, activeLayer, entry } = state;
-    const layer = layers.filter(({id}) => id === activeLayer)[0];
+    const titleEditing = activeLayer.editing;
+    const layer = layers.filter(({id}) => id === activeLayer.id)[0];
     const { id, name, title, sublayers, parameters } = layer;
-    const type = sublayers ? "layergroup" : "layer";
     const params = parameters.map(param => ({ ...param }));
+    
     const [changes, toggleChanges] = useState(false);
-    const [layerLabel, changeLabel] = useState(title || name);
-    const [activeInput, changeTitle] = useState(false);
-    const [prevVal, setPrev] = useState(name);
+    const [layerLabel, changeLabel] = useState('');
 
-    function handlerChangeParam(param) {
-        dispatch(changeParameter(id, param));
-    }
+    // if (!title && layerLabel !== name) {
+    //     changeLabel(name);
+    // } else if (title && layerLabel !== title) {
+    //     changeLabel(name);
+    // }
 
     function saveChanges(isSave) {
+        dispatch(activateLayer(activeLayer.id));
         if (isSave) {
-            setPrev(layerLabel);
-            dispatch(changeLayer({layer: id, title: layerLabel}));
-        } else {
-            setPrev(prevVal);
-            changeLabel(title || name);
+            dispatch(changeLayer({ id, title: layerLabel }));
         }
+        changeLabel('');
         toggleChanges(false);
-        changeTitle(false);
     }
     
     if (!params.length) {
@@ -67,27 +76,27 @@ function LayerManager() {
     return (
         <div id="layer-manager" style={{ display: "flex" }}>
             <div id="layer-parameters">
-                <p id="manager-name">
-                    {sublayers ? (
-                        <i>
-                            <strong>{name}</strong>
-                        </i>
-                    ) : (
+                <p id="manager-name" style={styles.center}>
+                    <b>
                         <i>{name}</i>
-                    )}
-                    {` — ${type}`}
+                    </b>
                 </p>
+                <div id="layer-type">
+                    Тип: {sublayers ? "група шарів" : "шар"}
+                </div>
                 <div id="manager-title" style={{ display: "flex" }}>
-                    Підпис шару:
-                    {!activeInput ? (
+                    Підпис:
+                    {!titleEditing ? (
                         [
                             <span key="layer-title" style={styles.title}>
                                 {title || name}
                             </span>,
                             <button
                                 key="change-layer-title"
-                                style={ styles.edit }
-                                onClick={() => changeTitle(true)}
+                                style={styles.edit}
+                                onClick={() => dispatch(
+                                    activateLayer(activeLayer.id, true)
+                                )}
                             >
                                 &#10000;
                             </button>,
@@ -95,17 +104,18 @@ function LayerManager() {
                     ) : (
                         <input
                             value={layerLabel}
-                            style={styles.title}
+                            style={{ ...styles.title, ...styles.titleInput }}
                             onChange={(e) => {
                                 changeLabel(e.target.value);
                                 toggleChanges(true);
                             }}
+                            autoFocus
                         />
                     )}
                 </div>
                 <div id="info-title">
                     <p>Назва параметра</p>
-                    <p>👁</p>
+                    <p>&#128065;</p>
                 </div>
                 <div className="layer-info">
                     {loading === "parameters" ? (
@@ -117,28 +127,34 @@ function LayerManager() {
                                 name={name}
                                 title={title}
                                 checked={checked}
-                                changeParameter={handlerChangeParam}
+                                changeParameter={(param) => dispatch(changeParameter(id, param))}
                             />
                         ))
                     )}
                 </div>
             </div>
-            {activeInput && (
-                <div className="dialog-buttons" style={styles.saveContainer}>
+            {titleEditing && (
+                <form className="dialog-buttons" style={styles.saveContainer}>
                     <button
                         className="cancel-btn"
-                        onClick={() => saveChanges(false)}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            saveChanges(false);
+                        }}
                     >
                         Скасувати
                     </button>
                     <button
                         className="ok-btn"
-                        onClick={() => saveChanges(true)}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            saveChanges(true);
+                        }}
                         disabled={!changes}
                     >
                         Зберегти
                     </button>
-                </div>
+                </form>
             )}
         </div>
     );

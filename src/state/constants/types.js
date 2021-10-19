@@ -31,4 +31,5 @@ export const registration = {
     RESET_ACTIVE_LAYER: 'registration/reset_active',
     START_LOADING: 'registration/startLoading',
     FINISH_LOADING: 'registration/finishLoading',
+    SET_ENTRY: 'registration/setEntry',
 }
