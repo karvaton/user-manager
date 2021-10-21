@@ -21,8 +21,7 @@ export function fetchParams(layer, entry) {
                     title: param,
                     checked: false,
                 }))
-            )
-            .then((data) => {
+            ).then((data) => {
                 dispatch({
                     type: types.registration.FINISH_LOADING,
                 });
@@ -64,6 +63,7 @@ async function fetchGroups(ws) {
                 return {
                     id: ("g" + codeStr(name) + idCode).slice(0, 16 - idCode.length),
                     name,
+                    workspace: ws,
                     title,
                     sublayers: publishables.published.map(({ name }) => name),
                     bbox: bounds,
@@ -93,7 +93,9 @@ async function fetchLayers(ws, ds) {
         let name = layer.name;
         let info = {}//await getLayerData(ws, ds, name);
         let id = "l" + name;
-        return info ? { name, id, ...info } : { name, id };
+        return info
+            ? { name, workspace: ws, id, ...info }
+            : { name, workspace: ws, id };
     });
 
     if (layers && layers.length) {

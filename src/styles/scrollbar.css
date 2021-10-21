@@ -1,0 +1,25 @@
+/* Скролбар */
+div::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+/* Смуга прокрутки */
+div::-webkit-scrollbar-track {
+    width: 12px;
+    background-color: #e0e0e0;
+}
+/* Скролер */
+div::-webkit-scrollbar-thumb {
+    height: auto;
+    background-color: #a9a9a9;
+    border-radius: 5px;
+    width: 8px;
+}
+/* Кут */
+div::-webkit-scrollbar-corner {background-color: #ccc;}
+/* div::-webkit-scrollbar-button {
+    height: 14px;
+    background: gray;
+} */
+div::-webkit-resizer { background-color: #a9a9a9;}
+/*::-webkit-scrollbar-track-piece { background-color: #ffffff;}*/

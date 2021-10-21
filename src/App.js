@@ -1,6 +1,6 @@
 import "./styles/style.css";
+import './styles/scrollbar.css';
 import Navbar from './components/nav-bar/Navbar';
-
 
 const App = ({children, auth}) => (
     auth ? (

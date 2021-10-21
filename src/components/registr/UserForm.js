@@ -33,28 +33,23 @@ const styles = {
     },
 };
 
-const fields = [
-    {
-        id: "name",
-        text: "Ім'я",
-        placeholder: "Введіть ім'я",
-    },
-    {
-        id: "email",
-        text: "E-mail",
-        placeholder: "Введіть електронну пошту",
-    },
-    {
-        id: "login",
-        text: "Логін",
-        placeholder: "Придумайте логін",
-    },
-    {
-        id: "password",
-        text: "Пароль",
-        placeholder: "Придумайте пароль",
-    },
-];
+const fields = [{
+    id: "name",
+    text: "Ім'я",
+    placeholder: "Введіть ім'я",
+}, {
+    id: "email",
+    text: "E-mail",
+    placeholder: "Введіть електронну пошту",
+}, {
+    id: "login",
+    text: "Логін",
+    placeholder: "Придумайте логін",
+}, {
+    id: "password",
+    text: "Пароль",
+    placeholder: "Придумайте пароль",
+}];
 
 const FormField = ({ id, text, placeholder, value, func, type }) => (
     <Tunel>
@@ -121,13 +116,9 @@ class UserForm extends Component {
             })
         );
         const user = { name, email, login, password, layers, print, entry, status };
+        // console.log(user);
         let userPost = await post.json("http://localhost:5000/users/", user);
-        let layersPost = await post.json(
-            "http://localhost:5000/layers/" + login,
-            layers
-        );
         console.log(await userPost.json());
-        console.log(await layersPost.json());
     }
 
     addLayerHandler(layer) {
@@ -155,8 +146,8 @@ class UserForm extends Component {
         e.preventDefault();
         const password = e.target.value;
         const entry = this.state.entry;
-        entry.password = password;
-        this.setState({ entry });
+        entry['password'] = password;
+        this.props.setEntry({ entry });
     }
 
     async switchSelect(e) {
@@ -180,12 +171,11 @@ class UserForm extends Component {
                     this.state.workspace,
                     dbname
                 );
+                // entry["password"] = "password_anton";
                 this.props.setEntry(entry);
             } else {
                 this.props.clearLayers();
-                this.setState(() => ({
-                    entry: {},
-                }));
+                this.props.setEntry();
             }
         }
     }
@@ -196,8 +186,7 @@ class UserForm extends Component {
                 .then((res) => res.json())
                 .then((json) =>
                     json?.dataStores.dataStore?.map(({ name }) => name)
-                )
-                .then((ds) => {
+                ).then((ds) => {
                     ds = ds || [];
                     this.setState(() => ({
                         dbases: [...ds],
@@ -343,17 +332,10 @@ class UserForm extends Component {
                         <Loading style={styles.loader} />
                     ) : availableList.length ? (
                         availableList.map(
-                            ({ name, title, id, styles, sublayers, parameters = []}) => (
+                            ({id}) => (
                                 <Layer
                                     key={id}
                                     id={id}
-                                    // name={name}
-                                    // title={title}
-                                    // styles={styles}
-                                    // sublayers={sublayers}
-                                    // parameters={parameters}
-                                    // addLayer={this.addLayerHandler}
-                                    // removeLayer={this.removeLayerHandler}
                                 />
                             )
                         )
@@ -401,7 +383,7 @@ const mapDispatchToProps = (dispatch) => ({
     getLayers: (ws, ds) => dispatch(fetchLayerList(ws, ds)),
     startLoading: (target) => dispatch(startLoading(target)),
     clearLayers: () => dispatch(clearLayers()),
-    setEntry: (entry) => dispatch(setEntry(entry)),
+    setEntry: (entry = {}) => dispatch(setEntry(entry)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import Layer from './Layer';
 import { connect } from "react-redux";
 import { changeOrder } from "../../state/actions/layers";
-
+import counter from "../../tools/counter";
+import scrollSpy from "../../tools/scrollSpy";
 
 class LayerList extends Component {
     static propTypes = {
@@ -16,10 +17,19 @@ class LayerList extends Component {
 
         const { layers } = this.props;
         this.state = {
+            index: 0,
+            afterClass: '',
             layers,
         };
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
+    }
+
+    componentDidMount() {
+        const max = document.getElementsByClassName("tbody").length;
+        let index = counter(max);
+        this.setState({ index });
+        this.getAfterClass()
     }
 
     handlerReplaceLayer(currentId, direction) {
@@ -32,48 +42,58 @@ class LayerList extends Component {
         this.props.modalWindow(layer);
     }
 
+    getAfterClass() {
+        const scroll = scrollSpy(".tbody", this.state.index);
+        const afterClass = scroll === "scroll"
+            ? " thead-scrolled"
+            : scroll === "scrolled"
+            ? " thead-scrolled-down"
+            : "";
+        this.setState({afterClass});
+    }
+
     render() {
         const layers = this.props.layers.sort(
             (a, b) => a.order_id - b.order_id
         );
+        const thClass = this.state.afterClass;
 
         return (
             <div className="line">
                 <div className="typename">Доступні шари:</div>
                 <div className="wms">
-                    <div className="wms-list">
-                        <table className="layer-list">
-                            <thead>
-                                <tr>
-                                    <th>Робоча область</th>
-                                    <th>Назва</th>
-                                    <th colSpan="4"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {layers.length ? (
-                                    layers.map((layer) => (
-                                        <Layer
-                                            key={layer.lid}
-                                            login={this.props.login}
-                                            layer={layer}
-                                            removeLayer={
-                                                this.handlerRemoveLayer
-                                            }
-                                            replaceLayer={
-                                                this.handlerReplaceLayer
-                                            }
-                                            setUp={this.setUpLayer}
-                                        />
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="3">Відсутні</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                    {/* <div className="wms-list"> */}
+                    <div className="layer-list">
+                        <div className={"thead" + thClass}>
+                            <div className="th">Робоча область</div>
+                            <div className="th">Назва</div>
+                            <div className="th"></div>
+                            <div className="th"></div>
+                            <div className="th"></div>
+                            <div className="th"></div>
+                        </div>
+
+                        <div
+                            className="tbody"
+                            onScroll={() => this.getAfterClass()}
+                        >
+                            {layers.length ? (
+                                layers.map((layer) => (
+                                    <Layer
+                                        key={layer.lid}
+                                        login={this.props.login}
+                                        layer={layer}
+                                        removeLayer={this.handlerRemoveLayer}
+                                        replaceLayer={this.handlerReplaceLayer}
+                                        setUp={this.setUpLayer}
+                                    />
+                                ))
+                            ) : (
+                                <div className="colspan-6">Відсутні</div>
+                            )}
+                        </div>
                     </div>
+                    {/* </div> */}
                     <div>
                         <input
                             className="addLayer"
@@ -89,8 +109,8 @@ class LayerList extends Component {
     }
 }
 
-const mapStateToProps = (store, state) => {
-    const { layers } = store.userManager.users.filter(({login}) => login === state.login)[0];
+const mapStateToProps = (store, props) => {
+    const { layers } = store.userManager.users.filter(({login}) => login === props.login)[0];
     return { layers };
 };
 

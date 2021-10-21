@@ -12,13 +12,17 @@ const connection = {
 const ip = process.env.PGHOST;
 
 async function getUser(login) {
+    const client = await db.connect();
+
     try {
         const conn_str = (
-            await db.query(`SELECT db_conn FROM ${TABLE} WHERE login = '${login}'`)
+            await client.query(`SELECT db_conn FROM ${TABLE} WHERE login = '${login}'`)
         ).rows[0].db_conn;
         return JSON.parse(conn_str);
     } catch (error) {
         return null;
+    } finally {
+        client.release();
     }
 }
 
@@ -37,16 +41,23 @@ export async function getParameters(req, res) {
 
         const connection =
             req.method === "POST" ? req.body : await getUser(login);
-            
+
         if (connection.host === 'localhost') {
             connection.host = ip;
+        } else {
+            connection['password'] = 'password_anton';
         }
         const pool = new pg.Pool(connection);
-        const parameters = (await pool.query(
+        var client = await pool.connect();
+
+        const parameters = (await client.query(
             `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table}'`
         )).rows.map(({ column_name }) => column_name);
         res.status(200).json(parameters);
     } catch (error) {
         console.log(error);
+    } finally {
+        client &&
+        client.release();
     }
 }

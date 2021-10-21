@@ -77,10 +77,13 @@ class Layer extends Component {
     }
 
     render() {
-        const { id, name, sublayers, styles, access } = this.props;
+        const { id, name, sublayers, styles, access, activeLayer } = this.props;
         const { display } = this.state;
+        const activeClass =
+            activeLayer?.id === id ? "option option-active" : "option";
+
         return (
-            <div id={id} className="option" onClick={() => this.setLayer(access)}>
+            <div id={id} className={activeClass} onClick={() => this.setLayer(access)}>
                 <div>
                     {(sublayers || styles) && (
                         <span

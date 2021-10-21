@@ -13,22 +13,40 @@ function LayerRow({id, replaceLayer, login}) {
     const { workspace, name, title, access } = layer;
 
     return (
-        <tr className={`layer-line ${access}-layer`}>
-            <td>{workspace}</td>
-            <td name={name}>{title || name}</td>
-            <td className="up-layer order-arrow">
-                <i className="fa fa-arrow-up" aria-hidden="true" onClick={() => replaceLayer(id, 'up')}></i>
-            </td>
-            <td className="down-layer order-arrow">
-                <i className="fa fa-arrow-down" aria-hidden="true" onClick={() => replaceLayer(id, 'down')}></i>
-            </td>
-            <td className="set-layer">
-                <i className="fa fa-cog" aria-hidden="true" onClick={() => dispatch(layerSetting(layer)) }></i>
-            </td>
-            <td className="delete-layer">
-                <i className="fa fa-minus" aria-hidden="true" onClick={() => dispatch(removeLayer({login, id}))}></i>
-            </td>
-        </tr>
+        <div className={`layer-line ${access}-layer`}>
+        {/* <Tunel> */}
+            <div className="td">{workspace}</div>
+            <div className="td" name={name}>{title || name}</div>
+            <div className="td up-layer order-arrow">
+                <i
+                    className="fa fa-arrow-up"
+                    aria-hidden="true"
+                    onClick={() => replaceLayer(id, "up")}
+                ></i>
+            </div>
+            <div className="td down-layer order-arrow">
+                <i
+                    className="fa fa-arrow-down"
+                    aria-hidden="true"
+                    onClick={() => replaceLayer(id, "down")}
+                ></i>
+            </div>
+            <div className="td set-layer">
+                <i
+                    className="fa fa-cog"
+                    aria-hidden="true"
+                    onClick={() => dispatch(layerSetting(layer))}
+                ></i>
+            </div>
+            <div className="td delete-layer">
+                <i
+                    className="fa fa-minus"
+                    aria-hidden="true"
+                    onClick={() => dispatch(removeLayer({ login, id }))}
+                ></i>
+            </div>
+        {/* </Tunel> */}
+        </div>
     );
 }
 LayerRow.propTypes = {
