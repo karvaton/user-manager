@@ -10,7 +10,7 @@ import { clearLayers, setEntry, startLoading } from "../../state/actions/registr
 const styles = {
     form: {
         flexDirection: "column",
-        margin: "0 15px",
+        margin: "0 15px 50px",
     },
     layerName: {
         display: "inline-block",

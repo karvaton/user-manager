@@ -5,21 +5,36 @@ div::-webkit-scrollbar {
 }
 /* Смуга прокрутки */
 div::-webkit-scrollbar-track {
-    width: 12px;
     background-color: #e0e0e0;
 }
 /* Скролер */
 div::-webkit-scrollbar-thumb {
     height: auto;
     background-color: #a9a9a9;
-    border-radius: 5px;
+    border-radius: 1px;
     width: 8px;
 }
 /* Кут */
-div::-webkit-scrollbar-corner {background-color: #ccc;}
-/* div::-webkit-scrollbar-button {
+/* div::-webkit-scrollbar-corner {background-color: #ccc;} */
+/* Кнопки скролбала */
+div::-webkit-scrollbar-button {
     height: 14px;
     background: gray;
+    /* display: none; */
+}
+div::-webkit-scrollbar-double-button {
+    display: none;
+}
+/* div::-webkit-resizer {
+    background-color: #a9a9a9;
 } */
-div::-webkit-resizer { background-color: #a9a9a9;}
-/*::-webkit-scrollbar-track-piece { background-color: #ffffff;}*/
+/* div::-webkit-scrollbar-track-piece {
+    background-color: #ffffff;
+} */
+::-webkit-scrollbar-button:vertical:start:increment,
+::-webkit-scrollbar-button:vertical:end:decrement, 
+::-webkit-scrollbar-button:horizontal:end:increment, 
+::-webkit-scrollbar-button:horizontal:end:decrement 
+{
+    display: none;
+}

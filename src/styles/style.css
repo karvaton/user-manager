@@ -1512,6 +1512,7 @@ span.vis, span.sel, span.edt {
 	/* padding: 6px 6px 0; */
 	flex-direction: column;
 	flex: .8;
+	max-height: calc(100vh - 155px);
 }
 
 
@@ -1914,7 +1915,7 @@ div.tbody {
 
 .layer-list .tbody .layer-line {
 	padding: 1px 5px;
-	font-size: 14px;
+	font-size: 13px;
 	color: #455b98;
 }
 .thead .th, .tbody .td:first-child {
@@ -2327,7 +2328,7 @@ input.save {
 
 .layer-info {
 	flex: 1;
-	display: grid;
+	display: block;
 	grid-auto-rows: minmax(25px, auto);
 	flex-direction: column;
 	font: bold 11pt sans-serif;

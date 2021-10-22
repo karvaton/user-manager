@@ -30,7 +30,7 @@ class Layer extends Component {
 
         this.state = {
             style: props.styles,
-            display: false
+            display: false,
         }
         this.toggleLayer = this.toggleLayer.bind(this);
         this.setLayer = this.setLayer.bind(this);
@@ -51,14 +51,12 @@ class Layer extends Component {
             access = null;
         }
         this.props.changeLayer({id, access});
-        // this.setState({access});
         this.setLayer(access);
     }
 
     setLayer(access) {
         if (access === "selectable" || access === "editable") {
-            let { activeLayer } = this.props;
-            const { id } = this.props;
+            let { id, activeLayer } = this.props;
             if (!activeLayer?.editing) {
                 this.props.activate(id);
             } else {
@@ -69,21 +67,20 @@ class Layer extends Component {
         }
     }
 
-    shouldComponentUpdate({access}) {
-        if (this.props.access === access) {
-            return false;
-        }
-        return true;
-    }
+    // shouldComponentUpdate({access}) {
+    //     if (this.props.access === access) {
+    //         return true;
+    //     }
+    //     return true;
+    // }
 
     render() {
         const { id, name, sublayers, styles, access, activeLayer } = this.props;
         const { display } = this.state;
-        const activeClass =
-            activeLayer?.id === id ? "option option-active" : "option";
+        const activeClass = activeLayer && activeLayer.id === id ? " option-active" : '';
 
         return (
-            <div id={id} className={activeClass} onClick={() => this.setLayer(access)}>
+            <div id={id} className={"option" + activeClass} onClick={() => this.setLayer(access)}>
                 <div>
                     {(sublayers || styles) && (
                         <span

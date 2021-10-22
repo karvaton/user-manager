@@ -14,7 +14,6 @@ function LayerRow({id, replaceLayer, login}) {
 
     return (
         <div className={`layer-line ${access}-layer`}>
-        {/* <Tunel> */}
             <div className="td">{workspace}</div>
             <div className="td" name={name}>{title || name}</div>
             <div className="td up-layer order-arrow">
@@ -45,7 +44,6 @@ function LayerRow({id, replaceLayer, login}) {
                     onClick={() => dispatch(removeLayer({ login, id }))}
                 ></i>
             </div>
-        {/* </Tunel> */}
         </div>
     );
 }

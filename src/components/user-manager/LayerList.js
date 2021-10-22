@@ -62,7 +62,6 @@ class LayerList extends Component {
             <div className="line">
                 <div className="typename">Доступні шари:</div>
                 <div className="wms">
-                    {/* <div className="wms-list"> */}
                     <div className="layer-list">
                         <div className={"thead" + thClass}>
                             <div className="th">Робоча область</div>
@@ -93,7 +92,7 @@ class LayerList extends Component {
                             )}
                         </div>
                     </div>
-                    {/* </div> */}
+
                     <div>
                         <input
                             className="addLayer"

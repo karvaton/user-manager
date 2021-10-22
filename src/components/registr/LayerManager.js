@@ -53,12 +53,6 @@ function LayerManager() {
     const [changes, toggleChanges] = useState(false);
     const [layerLabel, changeLabel] = useState('');
 
-    // if (!title && layerLabel !== name) {
-    //     changeLabel(name);
-    // } else if (title && layerLabel !== title) {
-    //     changeLabel(name);
-    // }
-
     function saveChanges(isSave) {
         dispatch(activateLayer(activeLayer.id));
         if (isSave) {
@@ -76,7 +70,11 @@ function LayerManager() {
     return (
         <div id="layer-manager" style={{ display: "flex" }}>
             <div id="layer-parameters">
-                <p id="manager-name" style={styles.center}>
+                <p 
+                    id="manager-name"
+                    style={styles.center}
+                    className="option-active"
+                >
                     <b>
                         <i>{name}</i>
                     </b>
@@ -103,7 +101,7 @@ function LayerManager() {
                         ]
                     ) : (
                         <input
-                            value={layerLabel}
+                            value={layerLabel || title || name}
                             style={{ ...styles.title, ...styles.titleInput }}
                             onChange={(e) => {
                                 changeLabel(e.target.value);

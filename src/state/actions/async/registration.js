@@ -90,9 +90,9 @@ async function fetchLayers(ws, ds) {
     );
     let json = await res.json();
     let layers = json?.featureTypes?.featureType?.map(async (layer) => {
-        let name = layer.name;
-        let info = {}//await getLayerData(ws, ds, name);
-        let id = "l" + name;
+        let info = await getLayerData(ws, ds, layer.name);
+        let name = info.name || layer.name;
+        let id = name[0] === 'l' ? name : "l" + name;
         return info
             ? { name, workspace: ws, id, ...info }
             : { name, workspace: ws, id };
@@ -107,18 +107,18 @@ async function fetchLayers(ws, ds) {
     }
 }
 
-export async function getLayerData(ws, ds, layerId) {
+async function getLayerData(ws, ds, layerId) {
     try {
         const res1 = await fetch(
             `http://localhost:5000/geoserver/workspaces/${ws}/layers/${layerId}`
         );
-        // const res2 = await fetch(
-        //     `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes/${layerId}`
-        // );
+        const res2 = await fetch(
+            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes/${layerId}`
+        );
         const json1 = await res1.json();
-        // const json2 = await res2.json();
+        const json2 = await res2.json();
         const layer = json1.layer;
-        // const feature = json2.featureType;
+        const feature = json2.featureType;
         let { defaultStyle, styles } = layer;
 
         if (styles) {
@@ -130,15 +130,17 @@ export async function getLayerData(ws, ds, layerId) {
                 isDefault: true,
             });
         }
-        // let { title, srs, latLonBoundingBox } = feature;
+        // console.log(feature);
+        let { nativeName, title, srs, nativeBoundingBox } = feature;
         return {
-            // title,
+            name: nativeName,
+            title,
             styles,
-            // srs,
-            // bbox: latLonBoundingBox,
-        };    
+            srs,
+            bbox: nativeBoundingBox,
+        };
     } catch (error) {
-        return;
+        return {};
     }
 }
 
