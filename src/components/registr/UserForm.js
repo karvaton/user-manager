@@ -5,7 +5,7 @@ import Layer from "./Layer";
 import { post } from "../../tools/ajax";
 import { connect } from "react-redux";
 import { fetchLayerList } from "../../state/actions/async/registration";
-import { clearLayers, setEntry, startLoading } from "../../state/actions/registration";
+import { clearLayers, deactivateLayer, setEntry, startLoading } from "../../state/actions/registration";
 
 const styles = {
     form: {
@@ -84,6 +84,7 @@ class UserForm extends Component {
             print: false,
             entry: {},
             status: null,
+            dbpass: '',
         };
         this.input = this.input.bind(this);
         this.switchSelect = this.switchSelect.bind(this);
@@ -144,14 +145,15 @@ class UserForm extends Component {
 
     inputPass(e) {
         e.preventDefault();
-        const password = e.target.value;
-        const entry = this.state.entry;
-        entry['password'] = password;
-        this.props.setEntry({ entry });
+        const entry = {...this.props.entry};
+        entry['password'] = e.target.value;
+        this.props.setEntry(entry);
     }
 
-    async switchSelect(e) {
+    switchSelect(e) {
         e.preventDefault();
+        this.props.deactivateLayer();
+        this.props.setEntry({});
         const { workspaceList, dbases } = this.state;
         const { value, name } = e.target;
 
@@ -167,12 +169,10 @@ class UserForm extends Component {
             if (dbname) {
                 this.props.startLoading('layers');
                 this.props.getLayers(this.state.workspace, dbname); 
-                let entry = await this.getDBparams(
+                this.getDBparams(
                     this.state.workspace,
                     dbname
                 );
-                // entry["password"] = "password_anton";
-                this.props.setEntry(entry);
             } else {
                 this.props.clearLayers();
                 this.props.setEntry();
@@ -208,12 +208,13 @@ class UserForm extends Component {
         );
         let json = await res.json();
         let entryKeys = ["host", "port", "database", "user", "schema"];
-        return json.dataStore.connectionParameters.entry
+        const entry = json.dataStore.connectionParameters.entry
             .filter((item) => entryKeys.includes(item["@key"]) && item["$"])
             .reduce((entryObj, entry) => {
                 entryObj[entry["@key"]] = entry["$"];
                 return entryObj;
             }, {});
+        this.props.setEntry(entry);
     }
 
     componentDidMount() {
@@ -241,7 +242,7 @@ class UserForm extends Component {
             dbname,
             print,
         } = this.state;
-        const { loading } = this.props;
+        const { loading, entry: {password = ''} } = this.props;
         const availableList = this.props.layers || [];
 
         return (
@@ -288,16 +289,16 @@ class UserForm extends Component {
                     ))}
                 </select>
 
-                {/* dbname && (
+                {dbname && (
                     <FormField
                         id="dbpass"
                         text="Пароль бази даних"
                         type="password"
                         placeholder="Введіть пароль для бази даних"
-                        func={this.input}
+                        func={event => this.inputPass(event)}
                         value={password}
                     />
-                ) */}
+                )}
 
                 <label htmlFor="available">Доступні шари</label>
 
@@ -328,24 +329,19 @@ class UserForm extends Component {
                     id="available-layers"
                     className="form-content"
                 >
-                    {loading === 'layers' ? (
+                    {loading === "layers" ? (
                         <Loading style={styles.loader} />
                     ) : availableList.length ? (
-                        availableList.map(
-                            ({id}) => (
-                                <Layer
-                                    key={id}
-                                    id={id}
-                                />
-                            )
-                        )
+                        availableList.map(({ id }) => (
+                            <Layer key={id} id={id} />
+                        ))
                     ) : (
                         <p style={styles.noLayers}>
                             <i>Немає доступних шарів</i>
                         </p>
                     )}
                 </div>
-                
+
                 <div>
                     <label htmlFor="print">
                         <input
@@ -384,6 +380,7 @@ const mapDispatchToProps = (dispatch) => ({
     startLoading: (target) => dispatch(startLoading(target)),
     clearLayers: () => dispatch(clearLayers()),
     setEntry: (entry = {}) => dispatch(setEntry(entry)),
+    deactivateLayer: () => dispatch(deactivateLayer()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

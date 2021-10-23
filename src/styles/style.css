@@ -1512,7 +1512,7 @@ span.vis, span.sel, span.edt {
 	/* padding: 6px 6px 0; */
 	flex-direction: column;
 	flex: .8;
-	max-height: calc(100vh - 155px);
+	max-height: calc(100vh - 85px);
 }
 
 
@@ -2342,8 +2342,17 @@ input.save {
 }
 
 #info-title {
-    border-top: solid 2px #9399a5;
-	margin: 1px 10px 0;
+    border-top: solid 2px#9399a5;
+    padding: 0px 12px;
+    border-bottom: solid 1px #9399a5;
+    background-color: #d8d8d83d;
+}
+
+
+#info-title > *,
+.parameter > *
+{
+	margin: 0 5px;
 }
 
 #info-title p {
@@ -2366,7 +2375,7 @@ input.save {
 .parameter {
 	height: 2rem;
 	align-items: center;
-	padding: 0 1% 0 2%
+	padding: 0 4px;
 }
 .parameter:hover {
 	background-color: #dde9f3;

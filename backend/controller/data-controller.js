@@ -43,15 +43,9 @@ export async function getParameters(req, res) {
 
         if (connection.host === "localhost") {
             connection.host = ip;
-        } else {
-            connection["password"] = "password_anton";
         }
         var pool = new pg.Pool(connection);
         // var client = await pool.connect();
-
-        console.log(
-            `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table}'`
-        );
         const parameters = (
             await pool.query(
                 `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table}'`

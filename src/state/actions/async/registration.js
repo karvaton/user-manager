@@ -85,6 +85,7 @@ async function getSublayers(ws, group) {
 
 
 async function fetchLayers(ws, ds) {
+    const idList = new Set();
     let res = await fetch(
         `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}/featuretypes`
     );
@@ -92,7 +93,8 @@ async function fetchLayers(ws, ds) {
     let layers = json?.featureTypes?.featureType?.map(async (layer) => {
         let info = await getLayerData(ws, ds, layer.name);
         let name = info.name || layer.name;
-        let id = name[0] === 'l' ? name : "l" + name;
+        let id = checkLayerId(idList, name);
+        idList.add(id);
         return info
             ? { name, workspace: ws, id, ...info }
             : { name, workspace: ws, id };
@@ -101,7 +103,7 @@ async function fetchLayers(ws, ds) {
     if (layers && layers.length) {
         layers = await Promise.all(layers);
 
-        return layers.filter((item) => !!item);
+        return layers.filter(item => !!item);
     } else {
         return [];
     }
@@ -123,14 +125,14 @@ async function getLayerData(ws, ds, layerId) {
 
         if (styles) {
             styles = styles.style
-                .filter((item) => item !== "null")
+                .filter(item => item !== "null")
                 .map(({ name }) => ({ name }));
             styles.unshift({
                 name: defaultStyle.name,
                 isDefault: true,
             });
         }
-        // console.log(feature);
+
         let { nativeName, title, srs, nativeBoundingBox } = feature;
         return {
             name: nativeName,
@@ -159,4 +161,12 @@ function codeStr(text) {
     let str = parseInt(input, 2).toString(36);
     let twoZero = str.indexOf("00");
     return str.slice(0, twoZero);
+}
+
+function checkLayerId(idList, id, k = 1) {
+    if (idList.has(id)) {
+        return checkLayerId(idList, id + k, ++k);
+    } else {
+        return id[0] === 'l' ? id : "l" + id;
+    }
 }
