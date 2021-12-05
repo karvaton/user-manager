@@ -9,7 +9,7 @@ const router = new Router();
 
 router.use('/users', userRouter);
 router.use('/layers', layersRouter);
-router.use('/geoserver', geoserver);
+router.use('/gs', geoserver);
 router.use('/data', dataRouter);
 
 

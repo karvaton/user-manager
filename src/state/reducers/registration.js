@@ -21,9 +21,10 @@ const registrationReducer = (state = initialState.registration, {type, payload})
             };
 
         case registration.GET_LAYERS:
+            console.log(payload);
             return {
                 ...state,
-                layers: payload.map((layer) => setParams(layer, { type })),
+                layers: [...payload]//.map((layer) => setParams(layer, { type })),
             };
 
         case registration.CHANGE_LAYER:

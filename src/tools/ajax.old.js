@@ -1,4 +1,4 @@
-async function json(url, data) {
+async function json(url, data = {}) {
     return await fetch(url, {
         method: this.method,
         body: JSON.stringify(data).replace(/'/g, "''"),

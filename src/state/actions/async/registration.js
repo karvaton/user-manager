@@ -1,4 +1,4 @@
-import {post} from '../../../tools/ajax';
+import { post } from '../../../tools/ajax';
 import * as types from '../../constants/types';
 
 export const getParams = (payload) => ({
@@ -30,17 +30,18 @@ export function fetchParams(layer, entry) {
     };
 }
 
-export function fetchLayerList(ws, ds) {
+export function fetchLayerList(workspace, dataStore) {
     return async (dispatch) => {
-        const layerGroups = await fetchGroups(ws);
-        const layers = await fetchLayers(ws, ds);
+        // const layerGroups = await fetchGroups(ws);
+        // const layers = await fetchLayers(ws, ds);
+        const layers = await post.json(`http://localhost:5000/gs/layers`, {
+            workspace,
+            dataStore,
+        });
         dispatch({
             type: types.registration.FINISH_LOADING,
         });
-        dispatch(getLayers([
-            ...layerGroups, 
-            ...layers
-        ]));
+        dispatch(getLayers(await layers.json()));
     };
 }
 

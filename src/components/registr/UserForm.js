@@ -1,7 +1,7 @@
 import { Component } from "react";
 import Tunel from "../common/tunel";
 import Loading from "../common/Loading";
-import Layer from "./Layer";
+// import Layer from "./Layer";
 import { post } from "../../tools/ajax";
 import { connect } from "react-redux";
 import { fetchLayerList } from "../../state/actions/async/registration";
@@ -84,7 +84,7 @@ class UserForm extends Component {
             print: false,
             entry: {},
             status: null,
-            dbpass: '',
+            dbpass: "",
         };
         this.input = this.input.bind(this);
         this.switchSelect = this.switchSelect.bind(this);
@@ -95,10 +95,9 @@ class UserForm extends Component {
         this.getDBparams = this.getDBparams.bind(this);
     }
 
-        componentDidMount() {
-        fetch("http://localhost:5000/geoserver/workspaces")
+    componentDidMount() {
+        post.json("http://localhost:5000/gs/workspaces")
             .then((res) => res.json())
-            .then((json) => json?.workspaces.workspace?.map(({ name }) => name))
             .then((workspases) => {
                 workspases = workspases || [];
                 this.setState(() => ({
@@ -116,19 +115,26 @@ class UserForm extends Component {
             print,
             status = null,
         } = this.state;
-        let {
-            layers = [],
-            entry,
-        } = this.props;
-        layers = layers.filter(({access}) => !!access).map(layer => ({
+
+        let { layers = [], entry } = this.props;
+        layers = layers
+            .filter(({ access }) => !!access)
+            .map((layer) => ({
                 ...layer,
                 parameters: layer.parameters
                     .filter(({ checked }) => checked)
-                    .map(({ name, title }) => ({ name, title })
-                ),
-            })
-        );
-        const user = { name, email, login, password, layers, print, entry, status };
+                    .map(({ name, title }) => ({ name, title })),
+            }));
+        const user = {
+            name,
+            email,
+            login,
+            password,
+            layers,
+            print,
+            entry,
+            status,
+        };
         // console.log(user);
         let userPost = await post.json("http://localhost:5000/users/", user);
         console.log(await userPost.json());
@@ -157,8 +163,8 @@ class UserForm extends Component {
 
     inputPass(e) {
         e.preventDefault();
-        const entry = {...this.props.entry};
-        entry['password'] = e.target.value;
+        const entry = { ...this.props.entry };
+        entry["password"] = e.target.value;
         this.props.setEntry(entry);
     }
 
@@ -171,20 +177,16 @@ class UserForm extends Component {
 
         if (name === "workspaces") {
             const workspace = workspaceList[value - 1] || "";
-            this.setState(() => ({ workspace, dbname: '' }));
+            this.setState(() => ({ workspace, dbname: "" }));
             this.getDBases(workspace);
-        
         } else if (name === "datastore") {
             const dbname = dbases[value - 1] || "";
             this.setState(() => ({ dbname }));
 
             if (dbname) {
-                this.props.startLoading('layers');
-                this.props.getLayers(this.state.workspace, dbname); 
-                this.getDBparams(
-                    this.state.workspace,
-                    dbname
-                );
+                this.props.startLoading("layers");
+                this.props.getLayers(this.state.workspace, dbname);
+                this.getDBparams(this.state.workspace, dbname);
                 return;
             } else {
                 this.props.setEntry({});
@@ -193,13 +195,11 @@ class UserForm extends Component {
         this.props.clearLayers();
     }
 
-    getDBases(ws) {
-        if (ws) {
-            fetch(`http://localhost:5000/geoserver/workspaces/${ws}/datastores`)
+    getDBases(workspace) {
+        if (workspace) {
+            post.json(`http://localhost:5000/gs/datastores`, { workspace })
                 .then((res) => res.json())
-                .then((json) =>
-                    json?.dataStores.dataStore?.map(({ name }) => name)
-                ).then((ds) => {
+                .then((ds) => {
                     ds = ds || [];
                     this.setState(() => ({
                         dbases: [...ds],
@@ -215,18 +215,19 @@ class UserForm extends Component {
         }
     }
 
-    async getDBparams(ws, ds) {
-        let res = await fetch(
-            `http://localhost:5000/geoserver/workspaces/${ws}/datastores/${ds}`
-        );
-        let json = await res.json();
-        let entryKeys = ["host", "port", "database", "user", "schema"];
-        const entry = json.dataStore.connectionParameters.entry
-            .filter((item) => entryKeys.includes(item["@key"]) && item["$"])
-            .reduce((entryObj, entry) => {
-                entryObj[entry["@key"]] = entry["$"];
-                return entryObj;
-            }, {});
+    async getDBparams(workspace, dataStore) {
+        let res = await post.json(`http://localhost:5000/gs/datastore/entry`, {
+            workspace,
+            dataStore,
+        });
+        let entry = await res.json();
+        // const entryKeys = ["host", "port", "database", "user", "schema"];
+        // const entry = json.dataStore.connectionParameters.entry
+        //     .filter((item) => entryKeys.includes(item["@key"]) && item["$"])
+        //     .reduce((entryObj, entry) => {
+        //         entryObj[entry["@key"]] = entry["$"];
+        //         return entryObj;
+        //     }, {});
         this.props.setEntry(entry);
     }
 
@@ -236,14 +237,11 @@ class UserForm extends Component {
     }
 
     render() {
+        const { workspaceList, workspace, dbases, dbname, print } = this.state;
         const {
-            workspaceList,
-            workspace,
-            dbases,
-            dbname,
-            print,
-        } = this.state;
-        const { loading, entry: {password = ''} } = this.props;
+            loading,
+            entry: { password = "" },
+        } = this.props;
         const availableList = this.props.layers || [];
 
         return (
@@ -296,7 +294,7 @@ class UserForm extends Component {
                         text="Пароль бази даних"
                         type="password"
                         placeholder="Введіть пароль для бази даних"
-                        func={event => this.inputPass(event)}
+                        func={(event) => this.inputPass(event)}
                         value={password}
                     />
                 )}
@@ -333,8 +331,9 @@ class UserForm extends Component {
                     {loading === "layers" ? (
                         <Loading style={styles.loader} />
                     ) : availableList.length ? (
-                        availableList.map(({ id }) => (
-                            <Layer key={id} id={id} />
+                        availableList.map(( layer ) => (
+                            <div key={layer}>{layer}</div>
+                            // <Layer key={id} id={id} />
                         ))
                     ) : (
                         <p style={styles.noLayers}>
