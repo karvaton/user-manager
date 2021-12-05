@@ -14,10 +14,10 @@ class UserList extends Component {
         const { users } = this.props;
 
         return <div id="wrapper">
-            {users.map(({id, login}) => 
+            {users.map(({id, ...user}) => 
                 <User
                     key={id}
-                    login={login}
+                    user={{id, ...user}}
                 />
             )}
         </div>
@@ -33,6 +33,6 @@ const mapDispatchToProps = dispatch => ({
     getUsers: () => dispatch(fetchUsers()),
     // getLayers: () => dispatch(fetchLayers()),
     setLayers: (login, layers) => dispatch(setLayerOrder(login, layers)),
-})
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserList);

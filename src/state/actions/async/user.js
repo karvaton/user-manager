@@ -13,16 +13,8 @@ export function fetchLayers() {
 
 export function fetchUsers() {
     return async (dispatch) => {
-        let userRes = await fetch("http://localhost:5000/users");
-        const layerRes = await fetch(`http://localhost:5000/layers`);
-        const users = await userRes.json();
-        const layers = await layerRes.json();
-
-        const usersData = users.map(user => ({
-                ...user,
-                layers: layers.filter(({ login }) => login === user.login),
-            })
-        );
+        const result = await fetch("http://localhost:5000/users/layers");
+        const usersData = await result.json();
         dispatch(setUsers(usersData));
     };
 }

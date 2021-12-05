@@ -46,11 +46,9 @@ export function changeOrder({login, currentId, direction}) {
     };
 }
 
-export function layerSetting(layer) {
+export function layerSetting(payload) {
     return {
         type: types.layer.SETTING,
-        payload: {
-            ...layer
-        }
+        payload       
     }
 }

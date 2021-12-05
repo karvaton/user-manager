@@ -1853,7 +1853,7 @@ p {
 	/*border: solid 1px gray;*/
 	/*border-radius: 3px;*/
 	/* padding: 3px 0; */
-	border-top: solid 1px;
+	/* border-top: solid 1px; */
 	border-bottom: solid 1px;
 }
 
@@ -1914,9 +1914,10 @@ div.tbody {
 }
 
 .layer-list .tbody .layer-line {
-	padding: 1px 5px;
+	padding: 5px;
 	font-size: 13px;
 	color: #455b98;
+	line-height: 18px;
 }
 .thead .th, .tbody .td:first-child {
 	text-align: center;
@@ -1958,7 +1959,7 @@ div.tbody {
 	flex-direction: column;
 	border-radius: 5px;
 	box-shadow: 0 0 5px 1px gray;
-	background: #fafafa;
+	background: #eee;
 	padding: 20px;
 	width: 70vw;
 	height: 80vh;
@@ -1972,6 +1973,9 @@ div.tbody {
 	 font-size: 10pt;
 	 color: grey;
 	 margin: auto;
+}
+#layer-settings .parameters {
+	overflow-y: auto;
 }
 .modal-buttons {
 	justify-content: flex-end;

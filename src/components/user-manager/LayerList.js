@@ -1,10 +1,11 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import Layer from './Layer';
 import { connect } from "react-redux";
 import { changeOrder } from "../../state/actions/layers";
-import counter from "../../tools/counter";
+// import counter from "../../tools/counter";
 import scrollSpy from "../../tools/scrollSpy";
+
 
 class LayerList extends Component {
     static propTypes = {
@@ -15,20 +16,20 @@ class LayerList extends Component {
     constructor(props) {
         super(props);
 
-        const { layers } = this.props;
         this.state = {
-            index: 0,
+            // index: 0,
             afterClass: '',
-            layers,
+            layers: props.layers,
         };
+        this.listRef = React.createRef();
         this.handlerReplaceLayer = this.handlerReplaceLayer.bind(this);
         this.setUpLayer = this.setUpLayer.bind(this);
     }
 
     componentDidMount() {
-        const max = document.getElementsByClassName("tbody").length;
-        let index = counter(max);
-        this.setState({ index });
+        // const max = document.getElementsByClassName("tbody").length;
+        // let index = counter(max);
+        // this.setState({ index });
         this.getAfterClass()
     }
 
@@ -43,7 +44,7 @@ class LayerList extends Component {
     }
 
     getAfterClass() {
-        const scroll = scrollSpy(".tbody", this.state.index);
+        const scroll = scrollSpy(this.listRef.current);
         const afterClass = scroll === "scroll"
             ? " thead-scrolled"
             : scroll === "scrolled"
@@ -73,6 +74,7 @@ class LayerList extends Component {
                         </div>
 
                         <div
+                            ref={this.listRef}
                             className="tbody"
                             onScroll={() => this.getAfterClass()}
                         >
@@ -108,13 +110,8 @@ class LayerList extends Component {
     }
 }
 
-const mapStateToProps = (store, props) => {
-    const { layers } = store.userManager.users.filter(({login}) => login === props.login)[0];
-    return { layers };
-};
-
 const mapDispatchToProps = (dispatch) => ({
     changeOrder: (layers, direction, currentId) => dispatch(changeOrder(layers, direction, currentId)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LayerList);
+export default connect(() => ({}), mapDispatchToProps)(LayerList);

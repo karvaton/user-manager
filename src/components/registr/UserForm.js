@@ -95,6 +95,18 @@ class UserForm extends Component {
         this.getDBparams = this.getDBparams.bind(this);
     }
 
+        componentDidMount() {
+        fetch("http://localhost:5000/geoserver/workspaces")
+            .then((res) => res.json())
+            .then((json) => json?.workspaces.workspace?.map(({ name }) => name))
+            .then((workspases) => {
+                workspases = workspases || [];
+                this.setState(() => ({
+                    workspaceList: [...workspases],
+                }));
+            });
+    }
+
     async createUser() {
         const {
             name,
@@ -158,12 +170,12 @@ class UserForm extends Component {
         const { value, name } = e.target;
 
         if (name === "workspaces") {
-            let workspace = workspaceList[value - 1] || "";
-            this.setState(() => ({ workspace }));
+            const workspace = workspaceList[value - 1] || "";
+            this.setState(() => ({ workspace, dbname: '' }));
             this.getDBases(workspace);
         
         } else if (name === "datastore") {
-            let dbname = dbases[value - 1] || "";
+            const dbname = dbases[value - 1] || "";
             this.setState(() => ({ dbname }));
 
             if (dbname) {
@@ -173,11 +185,12 @@ class UserForm extends Component {
                     this.state.workspace,
                     dbname
                 );
+                return;
             } else {
-                this.props.clearLayers();
-                this.props.setEntry();
+                this.props.setEntry({});
             }
         }
+        this.props.clearLayers();
     }
 
     getDBases(ws) {
@@ -215,18 +228,6 @@ class UserForm extends Component {
                 return entryObj;
             }, {});
         this.props.setEntry(entry);
-    }
-
-    componentDidMount() {
-        fetch("http://localhost:5000/geoserver/workspaces")
-            .then((res) => res.json())
-            .then((json) => json?.workspaces.workspace?.map(({ name }) => name))
-            .then((workspases) => {
-                workspases = workspases || [];
-                this.setState(() => ({
-                    workspaceList: [...workspases],
-                }));
-            });
     }
 
     togglePrint(e) {

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchParams } from "../../state/actions/async/registration";
-// import { startLoading } from "../../state/actions/registration";
+import { startLoading } from "../../state/actions/registration";
 import { activateLayer, changeLayer, changeParameter } from "../../state/actions/registration";
 import Loading from "../common/Loading";
 import Parameter from "./Parameter";
@@ -62,10 +62,12 @@ function LayerManager() {
         toggleChanges(false);
     }
     
-    if (!params.length) {
-        // dispatch(startLoading("parameters"));
-        dispatch(fetchParams(id, entry));
-    }
+    useEffect(() => {
+        if (!params.length) {
+            dispatch(startLoading("parameters"));
+            dispatch(fetchParams(id, entry));
+        }
+    });
 
     return (
         <div id="layer-manager" style={{ display: "flex" }}>

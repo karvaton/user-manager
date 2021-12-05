@@ -1,13 +1,10 @@
 
-function scrollSpy(selector: string, index: number): string {
-    const elements: NodeListOf<Element> = document.querySelectorAll(selector);
-    const element: Element = elements[index];
-    
+function scrollSpy(element?: Element): string {    
     if (element) {
-        const offset: number = element.clientHeight;
+        const clientHeight: number = element.clientHeight;
         const height: number = element.scrollHeight;
         
-        if (height > offset) {
+        if (height > clientHeight) {
             const top: number = element.clientTop;
             const scroll: number = element.scrollTop;
             return scroll > top ? "scrolled" : "scroll";

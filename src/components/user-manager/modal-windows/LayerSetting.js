@@ -1,76 +1,77 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import Tunel from "../../common/tunel";
+import Parameter from "../../registr/Parameter";
 
-class LayerSetting extends Component {
-    constructor(props) {
-        super(props);
+
+function LayerSetting({layer}) {
+    const { workspace, layer_name, login } = layer;
+    const [title, rename] = useState(layer.title);
+    const [access, changeAccess] = useState(layer.access);
+    const [availableParams, setAvailableParams] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/data/parameters/${login}?table=${layer_name}`)
+        .then(res => res.json())
+        .then(json => {
+            const parameters = JSON.parse(layer.parameters);
+            const paramsNames = parameters.map(({name}) => name);
+            const params = json.map((param) => ({
+                title: param,
+                name: param,
+                checked: paramsNames.includes(param),
+            }));
+            setAvailableParams(params);
+        });
+    }, [layer_name, login, layer]);
+    
+    function changeParamsList(params) {
         
-        const { title, parameters, access } = props.layer;
-        this.state = {
-            access,
-            title,
-            parameters,
-            availableParams: [],
-        }
     }
 
-    rename(e) {
-        const title = e.target.value;
-        this.setState(() => ({title}));
-    }
-
-    changeAccess(e) {
-        const access = e.target.value;
-        this.setState(() => ({access}));
-    }
-
-    // shouldComponentUpdate({accept, done}) {
-    //     accept && console.log(this.props.layer);
-    //     done();
-    //     return true;
-    // }
-
-    render() {
-        const { workspace, layer_name, } = this.props.layer;
-        const { title, access, } = this.state;
-        return (
-            <Tunel>
-                <div id="layer-settings">
-                    <p>Робоча область</p>
-                    <div name="workspace">{workspace}</div>
-                    <p>Назва шару</p>
-                    <div className="layer-name">{layer_name}</div>
-                    <p>Тип доступу</p>
-                    <select
-                        className="access-type"
-                        value={access}
-                        onChange={(event) => this.changeAccess(event)}
-                    >
-                        <option value="visible">Видимий</option>
-                        <option value="selectable">Доступний</option>
-                        <option value="editable">Редогований</option>
-                    </select>
-                    <p>Підпис шару</p>
-                    <input
-                        className="layer-title"
-                        value={title || layer_name}
-                        onChange={(event) => this.rename(event)}
-                    />
-                    {/* <p>Створити фільтр</p>
+    return (
+        <Tunel>
+            <div id="layer-settings">
+                <p>Робоча область</p>
+                <div name="workspace">{workspace}</div>
+                <p>Назва шару</p>
+                <div className="layer-name">{layer_name}</div>
+                <p>Тип доступу</p>
+                <select
+                    className="access-type"
+                    value={access}
+                    onChange={(e) => changeAccess(e.target.value)}
+                >
+                    <option value="visible">Видимий</option>
+                    <option value="selectable">Доступний</option>
+                    <option value="editable">Редогований</option>
+                </select>
+                <p>Підпис шару</p>
+                <input
+                    className="layer-title"
+                    value={title || layer_name}
+                    onChange={(e) => rename(e.target.value)}
+                />
+                {/* <p>Створити фільтр</p>
                     <div className="filter"></div> */}
-                    {["selectable", "editable"].includes(access) && (
-                        <Tunel>
-                            <p>Параметри</p>
-                            <div name="parameters" className="parameters">
-                                {this.state.availableParams}
-                            </div>
-                        </Tunel>
-                    )}
-                </div>
-                <div>Вибрати всі</div>
-            </Tunel>
-        );
-    }
+                {(access === "selectable" || access === "editable") && (
+                    <Tunel>
+                        <p>Параметри</p>
+                        <div name="parameters" className="parameters">
+                            {availableParams.map(({ name, title, checked }) => (
+                                <Parameter
+                                    name={name}
+                                    title={title}
+                                    checked={checked}
+                                    changeParameter={() => changeParamsList()}
+                                />
+                            ))}
+                        </div>
+                    </Tunel>
+                )}
+            </div>
+            <div>Вибрати всі</div>
+        </Tunel>
+    );
 }
 
 export default LayerSetting;

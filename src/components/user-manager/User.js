@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PropTypes from 'prop-types';
 import LayerList from "./LayerList";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateUser, removeUser } from "../../state/actions/async/user";
 
 
@@ -63,20 +63,15 @@ UserInfo.propTypes = {
 };
 
 
-function User(props) {
-    const { login, name, email, print } = useSelector(
-        (state) =>
-            state.userManager.users.filter(
-                (user) => user.login === props.login
-            )[0]
-    );
+function User({user}) {
+    const { login, name, email, print, layers } = user;
     const dispatch = useDispatch();
 
     return (
         <div className="list">
             <UserInfo login={login} name={name} email={email}>
                 <PasswordForm login={login} />
-                <LayerList login={login} />
+                <LayerList layers={layers} login={login} />
                 <p name="print" className="print">
                     Дозволити друк
                     <input
@@ -96,7 +91,7 @@ function User(props) {
     );
 }
 User.propTypes = {
-    login: PropTypes.string.isRequired,
+    user: PropTypes.object,
 };
 
 
