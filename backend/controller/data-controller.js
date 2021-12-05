@@ -1,6 +1,7 @@
 import pg from "pg";
-import db from "../db.js";
-import { TABLE } from "./user-control.js";
+import { getUser } from '../models/users.model.js';
+// import db from "../db.js";
+// import { TABLE } from "./user-control.js";
 
 const connection = {
     schema: "public",
@@ -11,19 +12,19 @@ const connection = {
 };
 const ip = process.env.PGHOST;
 
-async function getUser(login) {
-    // const client = await db.connect();
-    try {
-        const conn_str = (
-            await db.query(`SELECT db_conn FROM ${TABLE} WHERE login = '${login}'`)
-        ).rows[0].db_conn;
-        return JSON.parse(conn_str);
-    } catch (error) {
-        return null;
-    } finally {
-        // client.release();
-    }
-}
+// async function getUser(login) {
+//     // const client = await db.connect();
+//     try {
+//         const result = (
+//             await db.query(`SELECT db_conn FROM ${TABLE} WHERE login = '${login}'`)
+//         ).rows[0].db_conn;
+//         return JSON.parse(result);
+//     } catch (error) {
+//         return null;
+//     } finally {
+//         // client.release();
+//     }
+// }
 
 export async function getParamNames(req, res) {
     const pool = new pg.Pool(connection);
@@ -38,14 +39,19 @@ export async function getParameters(req, res) {
         const { login } = req.params;
         const { table } = req.query;
 
-        const connection =
-            req.method === "POST" ? req.body : await getUser(login);
+        let connection;
+        if(req.method === "POST") {
+            connection = req.body;
+        } else {
+            const user = await getUser(login);
+            connection = JSON.parse(user.db_conn);
+        }
 
         if (connection.host === "localhost") {
             connection.host = ip;
         }
         var pool = new pg.Pool(connection);
-        // var client = await pool.connect();
+
         const parameters = (
             await pool.query(
                 `SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table}'`
@@ -55,8 +61,6 @@ export async function getParameters(req, res) {
     } catch (error) {
         console.log(error);
     } finally {
-        // client &&
-        // client.release();
         pool.end();
     }
 }

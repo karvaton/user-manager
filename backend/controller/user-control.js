@@ -1,5 +1,6 @@
 import db from "../db.js";
 import { loadData, TABLE as DATA_TABLE } from "./layers-control.js";
+import * as usersModel from '../models/users.model.js';
 export const TABLE = 'test.users';
 
 const ip = process.env.PGHOST;
@@ -7,10 +8,27 @@ const ip = process.env.PGHOST;
 export async function getUsers(req, res) {
     // const client = await db.connect();
     try {
-        const users = (
-            await db.query(`SELECT * FROM ${TABLE} WHERE id >= 0`)
-        ).rows;
-        res.status(200).json(users);
+        const users = await usersModel.getUsers();
+        const usersData = users.map(({db_conn, ...user}) => user);
+        res.status(200).json(usersData);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(null);
+    } finally {
+        // client.release();
+    }
+}
+
+export async function getUsersFullData(req, res) {
+    // const client = await db.connect();
+    try {
+        const users = await usersModel.getUsers();
+        const layers = (await db.query(`SELECT * FROM ${DATA_TABLE}`)).rows;
+        const usersData = users.map(({ db_conn, ...user }) => ({
+            ...user,
+            layers: layers.filter(({ login }) => login === user.login),
+        }));
+        res.status(200).json(usersData);
     } catch (error) {
         console.log(error);
         res.status(500).send(null);
@@ -23,9 +41,7 @@ export async function getUser(req, res) {
     // const client = await db.connect();
     try {
         const { login } = req.params;
-        const user = (
-            await db.query(`SELECT * FROM ${TABLE} WHERE login = '${login}'`)
-        ).rows[0];
+        const user = await usersModel.getUser(login);
         res.status(200).json(user);
     } catch (error) {
         console.log(error);
