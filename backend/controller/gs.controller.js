@@ -35,14 +35,12 @@ export async function getLayerList(req, res) {
 
 async function getLayerGourps(workspace) {
     const json = await getGeoserverData(`workspaces/${workspace}/layergroups`);
-    // const json = await json.json();
-    return getNameList(json.layerGroups?.layerGroup) || [];
+    return makeLayerList(json.layerGroups?.layerGroup, 'layergroup') || [];
 }
 
 async function getLayers(workspace, datastore) {
     const json = await getGeoserverData(`workspaces/${workspace}/datastores/${datastore}/featuretypes`);
-    // const json = await result.json();
-    return getNameList(json.featureTypes?.featureType) || [];
+    return makeLayerList(json.featureTypes?.featureType, 'layer') || [];
 }
 
 async function getGeoserverData(path) {
@@ -60,6 +58,11 @@ async function getGeoserverData(path) {
 function getNameList(list) {
     return list?.map(({ name }) => name);
 }
+
+function makeLayerList(list, type) {
+    return list?.map(({ name }) => ({name, type}));
+}
+
 
 export function getDataStoreEntry(req, res) {
     const { workspace, dataStore } = req.body;

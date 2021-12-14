@@ -1,35 +1,19 @@
 import { Component } from "react";
 import Tunel from "../common/tunel";
-import Loading from "../common/Loading";
-// import Layer from "./Layer";
 import { post } from "../../tools/ajax";
 import { connect } from "react-redux";
 import { fetchLayerList } from "../../state/actions/async/registration";
 import { clearLayers, deactivateLayer, setEntry, startLoading } from "../../state/actions/registration";
+import AvailableLayerList from "./LayerList";
+
 
 const styles = {
     form: {
         flexDirection: "column",
         margin: "0 15px 50px",
     },
-    layerName: {
-        display: "inline-block",
-        width: "81%",
-    },
-    noLayers: {
-        fontSize: "10pt",
-        color: "grey",
-        padding: "26px 65px",
-    },
     submitButton: {
         width: "250px",
-    },
-    loader: {
-        height: "90px",
-        width: "90px",
-        borderWidth: "8px",
-        position: "relative",
-        top: "25%",
     },
 };
 
@@ -86,13 +70,6 @@ class UserForm extends Component {
             status: null,
             dbpass: "",
         };
-        this.input = this.input.bind(this);
-        this.switchSelect = this.switchSelect.bind(this);
-        this.addLayerHandler = this.addLayerHandler.bind(this);
-        this.removeLayerHandler = this.removeLayerHandler.bind(this);
-        this.createUser = this.createUser.bind(this);
-        this.togglePrint = this.togglePrint.bind(this);
-        this.getDBparams = this.getDBparams.bind(this);
     }
 
     componentDidMount() {
@@ -138,19 +115,6 @@ class UserForm extends Component {
         // console.log(user);
         let userPost = await post.json("http://localhost:5000/users/", user);
         console.log(await userPost.json());
-    }
-
-    addLayerHandler(layer) {
-        const { layers, workspace } = this.state;
-        layer.workspace = workspace;
-        layers.push(layer);
-        this.setState(() => ({ layers }));
-    }
-
-    removeLayerHandler(layerId) {
-        const layerList = this.state.layers;
-        const layers = layerList.filter(({ id }) => id !== layerId);
-        this.setState(() => ({ layers }));
     }
 
     input(e) {
@@ -221,13 +185,6 @@ class UserForm extends Component {
             dataStore,
         });
         let entry = await res.json();
-        // const entryKeys = ["host", "port", "database", "user", "schema"];
-        // const entry = json.dataStore.connectionParameters.entry
-        //     .filter((item) => entryKeys.includes(item["@key"]) && item["$"])
-        //     .reduce((entryObj, entry) => {
-        //         entryObj[entry["@key"]] = entry["$"];
-        //         return entryObj;
-        //     }, {});
         this.props.setEntry(entry);
     }
 
@@ -239,10 +196,8 @@ class UserForm extends Component {
     render() {
         const { workspaceList, workspace, dbases, dbname, print } = this.state;
         const {
-            loading,
             entry: { password = "" },
         } = this.props;
-        const availableList = this.props.layers || [];
 
         return (
             <div id="form" style={styles.form}>
@@ -301,46 +256,7 @@ class UserForm extends Component {
 
                 <label htmlFor="available">Доступні шари</label>
 
-                <div className="avail-header">
-                    <span style={styles.layerName}>Назва шару</span>
-                    <div id="search">
-                        <input
-                            type="text"
-                            id="search-field"
-                            className="search"
-                        />
-                        <div className="close-search">
-                            <i className="fa fa-times"></i>
-                        </div>
-                    </div>
-                    <div className="search-btn">
-                        <i className="fa fa-search"></i>
-                    </div>
-
-                    <span className="vis">&#128065; </span>
-                    <span className="sel"> &#11009; </span>
-                    <span className="edt">&#9998;</span>
-                    <hr />
-                </div>
-
-                <div
-                    name="layers"
-                    id="available-layers"
-                    className="form-content"
-                >
-                    {loading === "layers" ? (
-                        <Loading style={styles.loader} />
-                    ) : availableList.length ? (
-                        availableList.map(( layer ) => (
-                            <div key={layer}>{layer}</div>
-                            // <Layer key={id} id={id} />
-                        ))
-                    ) : (
-                        <p style={styles.noLayers}>
-                            <i>Немає доступних шарів</i>
-                        </p>
-                    )}
-                </div>
+                <AvailableLayerList />
 
                 <div>
                     <label htmlFor="print">

@@ -1,20 +1,19 @@
+type ListItem = { name: string; type: string }
+
 export class LayerList {
     protected static uniqList: Set<string> = new Set();
     
-    static create(list: string[]) {
+    static create(list: ListItem[]) {
         this.uniqList.clear();
-        return list.map(layerName => {
-            const id = this.getId(layerName);
+        return list.map(({name, type}) => {
+            const id = this.getId(name);
             const uniqId = this.checkId(id);
             this.uniqList.add(uniqId);
-            const type = this.checkType(layerName);
             if (type === 'layer') {
-                return new Layer(layerName, uniqId);
+                return new Layer(name, uniqId);
             } else {
-                return new LayerGroup(layerName, uniqId)
+                return new LayerGroup(name, uniqId)
             }
-            // const layer = new LayerListItem(layerName).create(uniqId);
-            // return layer;
         });
     }
 
@@ -68,36 +67,6 @@ export class LayerList {
 
 }
 
-export class LayerListItem {
-    protected layerName: string;
-
-    constructor(layerName: string) {
-        this.layerName = layerName;
-    }
-
-    create(id: string) {
-        return this.factory(id);
-    }
-
-    protected factory(id: string): Layer | LayerGroup {
-        const type = this.checkType();
-        if (type === 'layer') {
-            return new Layer(this.layerName, id);
-        } else {
-            return new LayerGroup(this.layerName, id);
-        }
-    }
-
-    protected checkType(): string {
-        const isLayer = parseInt(this.layerName) || parseInt(this.layerName.slice(1));
-        if (isLayer) {
-            return 'layer';
-        } else {
-            return 'layergroup';
-        }
-    }
-}
-
 class Layer {
     name: string;
     title: string;
@@ -105,8 +74,8 @@ class Layer {
     type: string;
     
     constructor(name: string, id?: string) {
-        this.name = name;
-        this.title = name;
+        this.name = `${name}`;
+        this.title = `${name}`;
         this.id = id || name;
         this.type = 'layer';
     }
