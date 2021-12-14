@@ -21,8 +21,8 @@ class Layer extends Component {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         title: PropTypes.string,
-        style: PropTypes.arrayOf(PropTypes.object),
-        sublayers: PropTypes.array,
+        // style: PropTypes.arrayOf(PropTypes.object),
+        // sublayers: PropTypes.array,
     }
 
     constructor(props) {
@@ -34,11 +34,6 @@ class Layer extends Component {
         }
         this.toggleLayer = this.toggleLayer.bind(this);
         this.setLayer = this.setLayer.bind(this);
-    }
-
-    toggleSublayers() {
-        let display = !this.state.display;
-        this.setState({display});
     }
 
     toggleLayer(e) {
@@ -67,17 +62,10 @@ class Layer extends Component {
         }
     }
 
-    // shouldComponentUpdate({access}) {
-    //     if (this.props.access === access) {
-    //         return true;
-    //     }
-    //     return true;
-    // }
-
     render() {
         const { id, name, sublayers, styles, access, activeLayer } = this.props;
         const { display } = this.state;
-        const activeClass = activeLayer && activeLayer.id === id ? " option-active" : '';
+        const activeClass = activeLayer?.id === id ? " option-active" : '';
 
         return (
             <div id={id} className={"option" + activeClass} onClick={() => this.setLayer(access)}>
@@ -148,9 +136,7 @@ class Layer extends Component {
                             >
                                 {isDefault ? (
                                     <b title="за замовчуванням">{name}</b>
-                                ) : (
-                                    name
-                                )}
+                                ) : name}
                                 <div className="radio">
                                     <input
                                         type="radio"
@@ -167,13 +153,6 @@ class Layer extends Component {
     }
 }
 
-const mapStateToProps = (state, {id}) => {
-    const layer = state.registration.layers.filter(layer => layer.id === id)[0];
-    return {
-        ...layer,
-        activeLayer: state.registration.activeLayer,
-    }
-};
 
 const mapDispatchToProps = (dispatch) => ({
     activate: (layer) => dispatch(activateLayer(layer)),
@@ -181,4 +160,4 @@ const mapDispatchToProps = (dispatch) => ({
     changeLayer: (layer) => dispatch(changeLayer(layer)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Layer);
+export default connect(null, mapDispatchToProps)(Layer);
