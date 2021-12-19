@@ -1,5 +1,4 @@
 import { Component } from "react";
-import Tunel from "../common/tunel";
 import { post } from "../../tools/ajax";
 import { connect } from "react-redux";
 import { fetchLayerList } from "../../state/actions/async/registration";
@@ -36,7 +35,7 @@ const fields = [{
 }];
 
 const FormField = ({ id, text, placeholder, value, func, type }) => (
-    <Tunel>
+    <>
         <label htmlFor={id}>{text}</label>
         <input
             type={(type || id) === "password" ? "password" : "text"}
@@ -48,7 +47,7 @@ const FormField = ({ id, text, placeholder, value, func, type }) => (
             value={value}
         />
         <p className="message" id={"msg-" + id}></p>
-    </Tunel>
+    </>
 );
 
 class UserForm extends Component {

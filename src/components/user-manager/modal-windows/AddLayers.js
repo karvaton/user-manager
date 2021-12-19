@@ -1,10 +1,9 @@
 import { Component } from "react";
-import Tunel from "../../common/tunel";
 
 class AddLayers extends Component {
     render() {
         return (
-            <Tunel>
+            <>
                 <p htmlFor="workspaces">Робоча область</p>
                 <select
                     name="workspaces"
@@ -17,7 +16,7 @@ class AddLayers extends Component {
                         <i>Немає доступних шарів</i>
                     </p>
                 </div>
-            </Tunel>
+            </>
         );
     }
 }

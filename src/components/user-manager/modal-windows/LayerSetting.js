@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Tunel from "../../common/tunel";
 import Parameter from "../../registr/Parameter";
 
 
@@ -29,7 +28,7 @@ function LayerSetting({layer}) {
     }
 
     return (
-        <Tunel>
+        <>
             <div id="layer-settings">
                 <p>Робоча область</p>
                 <div name="workspace">{workspace}</div>
@@ -54,7 +53,7 @@ function LayerSetting({layer}) {
                 {/* <p>Створити фільтр</p>
                     <div className="filter"></div> */}
                 {(access === "selectable" || access === "editable") && (
-                    <Tunel>
+                    <>
                         <p>Параметри</p>
                         <div name="parameters" className="parameters">
                             {availableParams.map(({ name, title, checked }) => (
@@ -66,11 +65,11 @@ function LayerSetting({layer}) {
                                 />
                             ))}
                         </div>
-                    </Tunel>
+                    </>
                 )}
             </div>
             <div>Вибрати всі</div>
-        </Tunel>
+        </>
     );
 }
 
